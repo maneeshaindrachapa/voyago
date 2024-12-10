@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AuthenticationPage from './pages/AuthenticationPage';
 import DashboardPage from './pages/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
+import { ThemeProvider } from './context/ThemeContext';
 
 const App: React.FC = () => {
   const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_FRONTEND_API;
@@ -14,24 +15,27 @@ const App: React.FC = () => {
   }
 
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <Router>
-        <Routes>
-          {/* Public route */}
-          <Route path="/" element={<AuthenticationPage />} />
+    <ThemeProvider>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <Router>
+          <Routes>
+            {/* Public route */}
+            <Route path="/" element={<AuthenticationPage />} />
+            <Route path="/auth" element={<AuthenticationPage />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Router>
-    </ClerkProvider>
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </ClerkProvider>
+    </ThemeProvider>
   );
 };
 

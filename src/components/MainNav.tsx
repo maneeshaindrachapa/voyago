@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Use react-router-dom for routing
 
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
+import { ThemeToggle } from './ThemeToggle';
 
 type MainNavProps = React.HTMLAttributes<HTMLElement>;
 
