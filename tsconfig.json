@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // Target modern JavaScript features
+    "lib": ["DOM", "DOM.Iterable", "ESNext"], // Include modern browser and JavaScript APIs
+    "jsx": "react-jsx", // Use the React JSX transform (React 17+)
+    "strict": true, // Enable all strict type-checking options
+    "module": "ESNext", // Use ESNext module syntax
+    "moduleResolution": "node", // Resolve modules in Node.js style
+    "esModuleInterop": true, // Enable interoperability between CommonJS and ES modules
+    "skipLibCheck": true, // Skip type-checking for library files
+    "forceConsistentCasingInFileNames": true, // Ensure consistent file name casing
+    "resolveJsonModule": true, // Allow importing `.json` files
+    "isolatedModules": true, // Ensure each file can be safely transpiled
+    "baseUrl": "./", // Base URL for module resolution
+    "paths": {
+      "@/*": ["src/*"] // Aliases for `@/` to resolve to `./src/`
+    }
+  },
+  "include": ["src/**/*"], // Include the `src` directory
+  "exclude": ["node_modules", "build"], // Exclude unnecessary directories
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs" // Override for Node.js runtime
+    }
+  }
+}

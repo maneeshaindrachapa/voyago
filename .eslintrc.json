@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "unused-imports" // Handles unused imports
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2021, // Modern ECMAScript features
+    "sourceType": "module", // Use ES Modules
+    "ecmaFeatures": {
+      "jsx": true // Enable JSX
+    }
+  },
+  "rules": {
+    // Automatically remove unused imports
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_", // Ignore variables prefixed with `_`
+        "args": "after-used", // Only check variables used after declaration
+        "argsIgnorePattern": "^_" // Ignore arguments prefixed with `_`
+      }
+    ]
+  },
+  "env": {
+    "browser": true, // Enable browser global variables
+    "es2021": true // Enable modern ECMAScript globals
+  }
+}
