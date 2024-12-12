@@ -18,6 +18,7 @@ import {
 } from '../components/ui/popover';
 import { Plus } from 'lucide-react';
 import TripForm from '../components/TripForm';
+import TripList from '../components/TripList';
 
 export function DashboardPage() {
   return (
@@ -39,13 +40,13 @@ export function DashboardPage() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50">
+            <div className="aspect-video rounded-xl bg-muted/50 md:col-span-1">
               <div className="flex flex-col h-full items-center justify-center p-4">
                 <Popover>
                   <PopoverTrigger>
                     <div className="flex flex-col items-center justify-center space-y-2 text-primary hover:text-primary/90 cursor-pointer transition-all">
                       <div className="flex items-center space-x-2">
-                        <p className="text-base font-medium hover:scale-105 transition-transform">
+                        <p className="text-base font-medium hover:scale-105 transition-transform font-funneld">
                           Create Trip
                         </p>
                         <Plus className="h-6 w-6 transition-transform hover:scale-125" />
@@ -61,8 +62,9 @@ export function DashboardPage() {
                 </Popover>
               </div>
             </div>
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="rounded-xl bg-muted/50 md:col-span-2">
+              <TripList />
+            </div>
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
         </div>
