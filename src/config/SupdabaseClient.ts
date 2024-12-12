@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { useSession } from '@clerk/clerk-react';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL!;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_KEY!;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY!;
 
 // Create a custom Supabase client that integrates with Clerk
 export function createClerkSupabaseClient() {

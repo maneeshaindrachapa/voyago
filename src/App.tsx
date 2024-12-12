@@ -3,9 +3,9 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import AuthenticationPage from './pages/AuthenticationPage';
-import DashboardPage from './pages/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
 import { ThemeProvider } from './context/ThemeContext';
+import { DashboardPage } from './pages/Dashboard';
 
 const App: React.FC = () => {
   const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_FRONTEND_API;

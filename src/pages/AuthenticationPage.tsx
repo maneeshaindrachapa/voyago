@@ -21,14 +21,14 @@ export default function AuthenticationPage() {
           <div className="absolute inset-0 bg-zinc-900" />
           <div className="relative z-20 flex items-center text-lg font-medium">
             <img
-              src="./icons/logo-light.png"
+              src="./icons/logo-dark.png"
               width={25}
               height={25}
               alt="Authentication"
               className="block dark:hidden"
             />
             <img
-              src="./icons/dark-dark.png"
+              src="./icons/logo-light.png"
               width={25}
               height={25}
               alt="Authentication"
