@@ -16,6 +16,7 @@ import { CountriesDropdown } from './CountriesDropdown';
 import { CalendarDateRangePicker } from './DatePicker';
 import { useUser } from '@clerk/clerk-react';
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
+import { toast } from 'sonner';
 import { addDays } from 'date-fns';
 
 // Zod schema including trip name and selected country
@@ -63,6 +64,7 @@ function TripForm() {
         country: values.country,
         daterange: values.daterange,
         ownerid: user.id,
+        imageurl: Math.floor(Math.random() * 7) + 1,
       });
 
       if (error) {
@@ -70,7 +72,7 @@ function TripForm() {
         alert('Error saving trip');
       } else {
         console.log('Trip saved successfully:', data);
-        alert('Trip created successfully!');
+        toast('Trip created successfully!');
         form.reset();
       }
     } catch (error) {

@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        funneld: ['FunnelDisplay', 'sans-serif'],
+        voyago: ['voyago-font', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
