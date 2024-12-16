@@ -20,8 +20,12 @@ import { Plus } from 'lucide-react';
 import TripForm from '../components/TripForm';
 import TripList from '../components/TripList';
 import { Toaster } from '../components/ui/sonner';
+import GoogleMapComponent from '../components/GoogleMap';
+import { useState } from 'react';
 
 export function DashboardPage() {
+  const [selectedTrip, setSelectedTrip] = useState<any | null>(null);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -66,8 +70,12 @@ export function DashboardPage() {
             <div className="rounded-xl bg-muted/50 md:col-span-1" />
           </div>
           <div className="grid auto-rows-min gap-4 md:grid-cols-6">
+            {/* Combined TripList and GoogleMap */}
             <div className="rounded-xl bg-muted/10 md:col-span-1 min-h-[40vh]">
-              <TripList />
+              <TripList onTripSelect={setSelectedTrip} />
+            </div>
+            <div className="rounded-xl bg-muted/10 md:col-span-3 min-h-[40vh]">
+              <GoogleMapComponent trip={selectedTrip} />
             </div>
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />

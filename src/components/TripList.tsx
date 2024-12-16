@@ -5,12 +5,14 @@ import { formatDate } from '../lib/common-utils';
 import { ChevronLeft, ChevronRight, Edit, Trash } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 
-function TripList() {
+function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
   const supabase = createClerkSupabaseClient();
   const { user } = useUser();
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -18,6 +20,15 @@ function TripList() {
   const scrollToCard = (direction: 'left' | 'right') => {
     if (scrollRef.current && scrollRef.current.firstElementChild) {
       const cardWidth = scrollRef.current.firstElementChild.clientWidth + 20;
+      let i = 0;
+      direction === 'right' ? (i = i + 1) : (i = i - 1);
+
+      i <= 0 ? setShowLeftButton(false) : setShowLeftButton(true);
+      i == trips.length - 1
+        ? setShowRightButton(false)
+        : setShowRightButton(true);
+
+      console.log(i);
       scrollRef.current.scrollBy({
         left: direction === 'right' ? cardWidth : -cardWidth,
         behavior: 'smooth',
@@ -55,6 +66,10 @@ function TripList() {
 
     fetchTrips();
   }, [supabase]);
+
+  const handleTripClick = (trip: any) => {
+    onTripSelect(trip);
+  };
 
   const handleEdit = (trip: any) => {
     console.log('Edit Trip:', trip);
@@ -149,18 +164,22 @@ function TripList() {
           </div>
 
           {/* Left and Right Buttons */}
-          <button
-            onClick={() => scrollToCard('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full transition"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => scrollToCard('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full  transition"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+          {showLeftButton && (
+            <button
+              onClick={() => scrollToCard('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full transition"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          )}
+          {showRightButton && (
+            <button
+              onClick={() => scrollToCard('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full  transition"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          )}
         </div>
       )}
     </div>
