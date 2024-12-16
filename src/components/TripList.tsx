@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { useUser } from '@clerk/clerk-react';
 import { formatDate } from '../lib/common-utils';
@@ -13,30 +13,9 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
   const [error, setError] = useState<string | null>(null);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(true);
+  const [selectedTripId, setSelectedTripId] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to the next/previous card
-  const scrollToCard = (direction: 'left' | 'right') => {
-    if (scrollRef.current && scrollRef.current.firstElementChild) {
-      const cardWidth = scrollRef.current.firstElementChild.clientWidth + 20;
-      let i = 0;
-      direction === 'right' ? (i = i + 1) : (i = i - 1);
-
-      i <= 0 ? setShowLeftButton(false) : setShowLeftButton(true);
-      i == trips.length - 1
-        ? setShowRightButton(false)
-        : setShowRightButton(true);
-
-      console.log(i);
-      scrollRef.current.scrollBy({
-        left: direction === 'right' ? cardWidth : -cardWidth,
-        behavior: 'smooth',
-      });
-    } else {
-      console.warn('No child elements found in the scroll container.');
-    }
-  };
 
   useEffect(() => {
     async function fetchTrips() {
@@ -55,6 +34,9 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
           setError(error.message);
         } else {
           setTrips(data || []);
+          if (data && data.length > 0) {
+            onTripSelect(data[0]); // Select the first trip by default
+          }
         }
       } catch (err) {
         console.error('Unexpected error:', err);
@@ -67,8 +49,33 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
     fetchTrips();
   }, [supabase]);
 
-  const handleTripClick = (trip: any) => {
-    onTripSelect(trip);
+  // Scroll to the next/previous card
+  const scrollToCard = (direction: 'left' | 'right') => {
+    if (scrollRef.current && scrollRef.current.firstElementChild) {
+      const cardWidth = scrollRef.current.firstElementChild.clientWidth + 20;
+
+      // Determine the new trip index
+      const newTripId =
+        direction === 'right'
+          ? Math.min(selectedTripId + 1, trips.length - 1) // Ensure it doesn't exceed the max index
+          : Math.max(selectedTripId - 1, 0); // Ensure it doesn't go below 0
+
+      // Scroll to the new position
+      scrollRef.current.scrollBy({
+        left: direction === 'right' ? cardWidth : -cardWidth,
+        behavior: 'smooth',
+      });
+
+      // Update state
+      setSelectedTripId(newTripId);
+      setShowLeftButton(newTripId > 0);
+      setShowRightButton(newTripId < trips.length - 1);
+
+      // Trigger the callback for the newly selected trip
+      onTripSelect(trips[newTripId]);
+    } else {
+      console.warn('No child elements found in the scroll container.');
+    }
   };
 
   const handleEdit = (trip: any) => {

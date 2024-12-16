@@ -4,6 +4,7 @@ import {
   useLoadScript,
   Marker,
   Autocomplete,
+  Libraries,
 } from '@react-google-maps/api';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -68,12 +69,13 @@ const greyMapStyles = [
     ],
   },
 ];
+const libraries: Libraries = ['places'];
 
 function GoogleMapComponent({ trip }: { trip: any }) {
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-    libraries: ['places'], // Include 'places' for Autocomplete
+    libraries,
   });
   const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -81,19 +83,21 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     lat: any;
     lng: any;
   }>({
-    lat: 37.7749, // Default to San Francisco
+    lat: 37.7749,
     lng: -122.4194,
   });
 
   const handleSetCenter = async () => {
-    try {
-      const { lat, lng } = await getLatLngFromCountry(
-        trip.country,
-        GOOGLE_MAPS_API_KEY
-      );
-      setDefaultCenter({ lat, lng });
-    } catch (error) {
-      console.error('Error fetching coordinates:', error);
+    if (trip) {
+      try {
+        const { lat, lng } = await getLatLngFromCountry(
+          trip.country,
+          GOOGLE_MAPS_API_KEY
+        );
+        setDefaultCenter({ lat, lng });
+      } catch (error) {
+        console.error('Error fetching coordinates:', error);
+      }
     }
   };
 
@@ -150,7 +154,7 @@ function GoogleMapComponent({ trip }: { trip: any }) {
       <div className="rounded-lg shadow-md overflow-hidden ">
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          zoom={10}
+          zoom={7}
           center={defaultCenter}
           options={{
             styles: greyMapStyles,
@@ -160,7 +164,14 @@ function GoogleMapComponent({ trip }: { trip: any }) {
         >
           {/* Render Markers */}
           {markers.map((marker, index) => (
-            <Marker key={index} position={marker} />
+            <Marker
+              key={index}
+              position={marker}
+              icon={{
+                url: './map-pin.png',
+                scaledSize: new window.google.maps.Size(10, 10), // Scale the icon
+              }}
+            />
           ))}
         </GoogleMap>
       </div>
