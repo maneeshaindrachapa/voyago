@@ -4,6 +4,7 @@ import { useUser } from '@clerk/clerk-react';
 import { formatDate } from '../lib/common-utils';
 import { ChevronLeft, ChevronRight, Edit, Trash } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import { fetchTripsByUser } from '../lib/trip-service';
 
 function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
   const supabase = createClerkSupabaseClient();
@@ -18,36 +19,25 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    async function fetchTrips() {
+    const loadTrips = async () => {
       if (!user) {
         setLoading(false);
         return;
       }
       try {
-        const { data, error } = await supabase
-          .from('trips')
-          .select('*')
-          .eq('ownerid', user.id);
-
-        if (error) {
-          console.error('Error fetching trips:', error.message);
-          setError(error.message);
-        } else {
-          setTrips(data || []);
-          if (data && data.length > 0) {
-            onTripSelect(data[0]); // Select the first trip by default
-          }
+        const fetchedTrips = await fetchTripsByUser(supabase, user.id);
+        setTrips(fetchedTrips);
+        if (fetchedTrips.length > 0) {
+          onTripSelect(fetchedTrips[0]); // Select the first trip by default
         }
       } catch (err) {
-        console.error('Unexpected error:', err);
-        setError('Unexpected error occurred');
+        setError('Error fetching trips');
       } finally {
         setLoading(false);
       }
-    }
-
-    fetchTrips();
-  }, [supabase]);
+    };
+    loadTrips();
+  }, [supabase, user, onTripSelect]);
 
   // Scroll to the next/previous card
   const scrollToCard = (direction: 'left' | 'right') => {

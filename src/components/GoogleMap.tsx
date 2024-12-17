@@ -10,7 +10,10 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { getLatLngFromCountry, getLocationName } from '../lib/common-utils';
 import { Skeleton } from './ui/skeleton';
-import { SquareMinus } from 'lucide-react';
+import { Save, SquareMinus } from 'lucide-react';
+import { createClerkSupabaseClient } from '../config/SupdabaseClient';
+import { toast } from 'sonner';
+import { updateTripLocations } from '../lib/trip-service';
 
 const mapContainerStyle = {
   width: '100%',
@@ -83,6 +86,7 @@ const libraries: Libraries = ['places'];
  * @param {any} props.trip - The trip object containing the `country` property for map centering.
  */
 function GoogleMapComponent({ trip }: { trip: any }) {
+  const supabase = createClerkSupabaseClient();
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
 
   // Load Google Maps script and required libraries.
@@ -90,9 +94,6 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries,
   });
-
-  // State to hold the list of markers (latitude and longitude coordinates).
-  const [markers, setMarkers] = useState<{ lat: number; lng: number }[]>([]);
 
   // State to hold the list of locations of the markers
   const [listOfPlaces, setListOfPlaces] = useState<
@@ -102,6 +103,9 @@ function GoogleMapComponent({ trip }: { trip: any }) {
       location: string;
     }[]
   >([]);
+
+  // State to have the save button for trip itenary
+  const [saveBtn, setSaveBtn] = useState(false);
 
   // Ref for the Google Maps Autocomplete instance.
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -114,6 +118,12 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     lat: 37.7749, // Default latitude (San Francisco)
     lng: -122.4194, // Default longitude (San Francisco)
   });
+
+  useEffect(() => {
+    handleSetCenter(); //set the country selected as the center of google map
+    trip != null ? setListOfPlaces(trip.locations) : setListOfPlaces([]);
+    console.log(trip);
+  }, [trip]);
 
   /**
    * Sets the map center based on the `country` property of the trip object.
@@ -138,11 +148,6 @@ function GoogleMapComponent({ trip }: { trip: any }) {
       }
     }
   };
-
-  useEffect(() => {
-    handleSetCenter(); //set the country selected as the center of google map
-    setMarkers([]); // get the markers already set or have default value
-  }, [trip]);
 
   /**
    * Adds a marker to the map based on the selected location from the Autocomplete input.
@@ -173,9 +178,6 @@ function GoogleMapComponent({ trip }: { trip: any }) {
       lng: place.geometry.location.lng(),
     };
 
-    // Add the marker to the state
-    setMarkers((prevMarkers) => [...prevMarkers, location]);
-
     // Fetch and add the location name to the marker
     const locationName = await getLocationName(
       location.lat,
@@ -189,10 +191,20 @@ function GoogleMapComponent({ trip }: { trip: any }) {
       { lat: location.lat, lng: location.lng, location: locationName },
     ]);
 
-    setMarkers((prevMarkers) => [
-      ...prevMarkers,
-      { ...location, name: locationName },
-    ]);
+    // Save Button enabled
+    setSaveBtn(true);
+  };
+
+  // Save itenary
+  const handleSaveItenary = async () => {
+    try {
+      await updateTripLocations(supabase, trip.id, listOfPlaces);
+      toast('Trip itinerary updated successfully!');
+      setSaveBtn(false);
+    } catch (err) {
+      console.error('Error saving itinerary:', err);
+      toast('Failed to update itinerary');
+    }
   };
 
   if (!isLoaded)
@@ -213,17 +225,17 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
         {/* Search Bar */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[20] max-w-lg items-center gap-2 bg-white p-2 shadow-md rounded-lg">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] max-w-lg items-center gap-2 bg-white p-2 shadow-md rounded-lg">
           <Autocomplete
             onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
           >
             <Input
               type="text"
               placeholder="Search for a place"
-              className="flex-1 text-black"
+              className="flex-1 text-black w-[45vh]"
             />
           </Autocomplete>
-          <Button onClick={addMarker} variant="default">
+          <Button onClick={addMarker} variant="outline" className="w-[12vh]">
             Add
           </Button>
         </div>
@@ -241,13 +253,13 @@ function GoogleMapComponent({ trip }: { trip: any }) {
             }}
           >
             {/* Render Markers */}
-            {markers.map((marker, index) => (
+            {listOfPlaces.map((place, index) => (
               <Marker
                 key={index}
-                position={marker}
+                position={{ lat: place.lat, lng: place.lng }}
                 icon={{
                   url: './map-pin.png',
-                  scaledSize: new window.google.maps.Size(10, 10), // Scale the icon
+                  scaledSize: new window.google.maps.Size(10, 10),
                 }}
               />
             ))}
@@ -257,10 +269,15 @@ function GoogleMapComponent({ trip }: { trip: any }) {
       <div className="col-span-1 relative">
         {/* Location List Section */}
         <div className="col-span-1 bg-white dark:bg-muted/50 p-4 rounded-lg shadow-md overflow-auto h-[40vh]">
-          <h2 className="text-lg font-semibold mb-4 font-voyago">
-            Trip Itenary
-          </h2>
-          {markers.length === 0 ? (
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold font-voyago">
+              Trip Itinerary
+            </h2>
+            {saveBtn && (
+              <Save width={15} height={15} onClick={handleSaveItenary} />
+            )}
+          </div>
+          {listOfPlaces.length === 0 ? (
             <p className="text-gray-500 text-sm">No locations added yet.</p>
           ) : (
             <ul className="space-y-3">
@@ -278,11 +295,14 @@ function GoogleMapComponent({ trip }: { trip: any }) {
                   </div>
                   <SquareMinus
                     color="#D0312D"
-                    onClick={() =>
-                      setMarkers((prev) =>
-                        prev.filter((_, markerIndex) => markerIndex !== index)
-                      )
-                    }
+                    onClick={() => {
+                      setListOfPlaces((prev) =>
+                        prev.filter(
+                          (_, locationIndex) => locationIndex !== index
+                        )
+                      );
+                      setSaveBtn(true);
+                    }}
                   />
                 </li>
               ))}
