@@ -44,8 +44,8 @@ export function DashboardPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50 md:col-span-1">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-8">
+            <div className="aspect-video rounded-xl bg-muted/50 md:col-span-1 h-[15vh]">
               <div className="flex flex-col h-full items-center justify-center p-4">
                 <Popover>
                   <PopoverTrigger>
@@ -67,14 +67,13 @@ export function DashboardPage() {
                 </Popover>
               </div>
             </div>
-            <div className="rounded-xl bg-muted/50 md:col-span-1" />
           </div>
-          <div className="grid auto-rows-min gap-4 md:grid-cols-6">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-8">
             {/* Combined TripList and GoogleMap */}
-            <div className="rounded-xl bg-muted/10 md:col-span-1 min-h-[40vh]">
+            <div className="rounded-xl bg-muted/10 md:col-span-2 min-h-[40vh]">
               <TripList onTripSelect={setSelectedTrip} />
             </div>
-            <div className="rounded-xl bg-muted/10 md:col-span-3 min-h-[40vh]">
+            <div className="rounded-xl bg-muted/10 md:col-span-6 min-h-[40vh]">
               <GoogleMapComponent trip={selectedTrip} />
             </div>
           </div>
