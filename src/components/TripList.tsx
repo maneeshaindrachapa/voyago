@@ -5,6 +5,7 @@ import { formatDate } from '../lib/common-utils';
 import { ChevronLeft, ChevronRight, Edit, Trash } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { fetchTripsByUser } from '../lib/trip-service';
+import { toast } from 'sonner';
 
 function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
   const supabase = createClerkSupabaseClient();
@@ -28,7 +29,7 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
         const fetchedTrips = await fetchTripsByUser(supabase, user.id);
         setTrips(fetchedTrips);
         if (fetchedTrips.length > 0) {
-          onTripSelect(fetchedTrips[0]); // Select the first trip by default
+          onTripSelect(fetchedTrips[0]);
         }
       } catch (err) {
         setError('Error fetching trips');
@@ -44,24 +45,20 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
     if (scrollRef.current && scrollRef.current.firstElementChild) {
       const cardWidth = scrollRef.current.firstElementChild.clientWidth + 20;
 
-      // Determine the new trip index
       const newTripId =
         direction === 'right'
-          ? Math.min(selectedTripId + 1, trips.length - 1) // Ensure it doesn't exceed the max index
-          : Math.max(selectedTripId - 1, 0); // Ensure it doesn't go below 0
+          ? Math.min(selectedTripId + 1, trips.length - 1)
+          : Math.max(selectedTripId - 1, 0);
 
-      // Scroll to the new position
       scrollRef.current.scrollBy({
         left: direction === 'right' ? cardWidth : -cardWidth,
         behavior: 'smooth',
       });
 
-      // Update state
       setSelectedTripId(newTripId);
       setShowLeftButton(newTripId > 0);
       setShowRightButton(newTripId < trips.length - 1);
 
-      // Trigger the callback for the newly selected trip
       onTripSelect(trips[newTripId]);
     } else {
       console.warn('No child elements found in the scroll container.');
@@ -80,7 +77,7 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
         console.error('Error deleting trip:', error.message);
       } else {
         setTrips((prevTrips) => prevTrips.filter((trip) => trip.id !== tripId));
-        console.log('Trip deleted successfully');
+        toast('Trip deleted successfully');
       }
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -124,12 +121,9 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
                     backgroundImage: `url('/backgrounds/${trip.imageurl}.jpg')`,
                   }}
                 >
-                  {/* Overlay */}
                   <div className="absolute inset-0 bg-black/80 rounded-lg"></div>
 
-                  {/* Content */}
                   <div className="relative flex flex-col justify-between h-full p-4 text-white">
-                    {/* Action Buttons */}
                     <div className="flex items-center space-x-2 mt-4 justify-between">
                       <button
                         onClick={() => handleEdit(trip)}
@@ -159,8 +153,6 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
               );
             })}
           </div>
-
-          {/* Left and Right Buttons */}
           {showLeftButton && (
             <button
               onClick={() => scrollToCard('left')}

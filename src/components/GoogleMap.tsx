@@ -75,12 +75,14 @@ const greyMapStyles = [
 ];
 
 const libraries: Libraries = ['places'];
+
 /**
  * GoogleMapComponent
  *
  * A reusable React component to render a Google Map with:
  * - Centered map based on a given trip location.
  * - Optional markers for user interaction or search.
+ * - Get the location name
  *
  * @param {Object} props - Component props.
  * @param {any} props.trip - The trip object containing the `country` property for map centering.
@@ -225,22 +227,25 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
         {/* Search Bar */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] max-w-lg items-center gap-2 bg-white p-2 shadow-md rounded-lg">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] max-w-lg items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
           <Autocomplete
             onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
           >
             <Input
               type="text"
               placeholder="Search for a place"
-              className="flex-1 text-black w-[45vh]"
+              className="flex-1 text-black dark:text-white w-[45vh] outline-none border-none hover:border-none hover:outline-none selection:outline-none focus-visible:ring-offset-0 focus-visible:ring-0 font-voyago"
             />
           </Autocomplete>
-          <Button onClick={addMarker} variant="outline" className="w-[12vh]">
+          <Button
+            onClick={addMarker}
+            variant="default"
+            className="w-[12vh] bg-gray-600 text-white hover:bg-gray-500 font-voyago"
+          >
             Add
           </Button>
         </div>
 
-        {/* Map Container */}
         <div className="rounded-lg shadow-md overflow-hidden ">
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
@@ -252,7 +257,6 @@ function GoogleMapComponent({ trip }: { trip: any }) {
               zoomControl: true,
             }}
           >
-            {/* Render Markers */}
             {listOfPlaces.map((place, index) => (
               <Marker
                 key={index}
@@ -267,7 +271,6 @@ function GoogleMapComponent({ trip }: { trip: any }) {
         </div>
       </div>
       <div className="col-span-1 relative">
-        {/* Location List Section */}
         <div className="col-span-1 bg-white dark:bg-muted/50 p-4 rounded-lg shadow-md overflow-auto h-[40vh]">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold font-voyago">
