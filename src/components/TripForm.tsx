@@ -36,7 +36,7 @@ const formSchema = z.object({
     }),
 });
 
-function TripForm() {
+function TripForm({ onTripCreated }: { onTripCreated: () => void }) {
   const { user } = useUser();
   const supabase = createClerkSupabaseClient();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -74,6 +74,7 @@ function TripForm() {
         console.log('Trip saved successfully:', data);
         toast('Trip created successfully!');
         form.reset();
+        onTripCreated();
       }
     } catch (error) {
       console.error('Unexpected error:', error);

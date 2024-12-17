@@ -7,7 +7,13 @@ import { Skeleton } from './ui/skeleton';
 import { fetchTripsByUser } from '../lib/trip-service';
 import { toast } from 'sonner';
 
-function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
+function TripList({
+  onTripSelect,
+  refresh,
+}: {
+  onTripSelect: (trip: any) => void;
+  refresh: boolean;
+}) {
   const supabase = createClerkSupabaseClient();
   const { user } = useUser();
   const [trips, setTrips] = useState<any[]>([]);
@@ -38,7 +44,7 @@ function TripList({ onTripSelect }: { onTripSelect: (trip: any) => void }) {
       }
     };
     loadTrips();
-  }, [supabase, user, onTripSelect]);
+  }, [supabase, user, onTripSelect, refresh]);
 
   // Scroll to the next/previous card
   const scrollToCard = (direction: 'left' | 'right') => {
