@@ -47,11 +47,11 @@ export interface TripFormValues {
 }
 
 function TripForm({
-  onTripCreated,
+  onTripUpdate,
   trip,
   isUpdated,
 }: {
-  onTripCreated: () => void;
+  onTripUpdate: () => void;
   trip?: TripFormValues;
   isUpdated?: boolean;
 }) {
@@ -93,7 +93,7 @@ function TripForm({
         console.log('Trip saved successfully:', data);
         toast('Trip created successfully!');
         form.reset();
-        onTripCreated();
+        onTripUpdate();
       }
     } catch (error) {
       console.error('Unexpected error:', error);
@@ -123,6 +123,7 @@ function TripForm({
         toast('Error updating trip. Please try again.');
       } else {
         toast('Trip updated successfully!');
+        onTripUpdate();
       }
     } catch (error) {
       console.error('Unexpected error:', error);
@@ -213,7 +214,7 @@ function TripForm({
 
         {/* Submit Button */}
         <Button type="submit" className="rounded-md w-full">
-          Create Trip
+          {isUpdated ? 'Update Trip' : 'Create Trip'}
         </Button>
       </form>
     </Form>

@@ -14,6 +14,7 @@ import { Save, SquareMinus } from 'lucide-react';
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { toast } from 'sonner';
 import { updateTripLocations } from '../lib/trip-service';
+import { useTheme } from '../context/ThemeContext';
 
 const mapContainerStyle = {
   width: '100%',
@@ -73,6 +74,77 @@ const greyMapStyles = [
     ],
   },
 ];
+// Light-themed map style
+const lightMapStyles = [
+  {
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f5f5f5',
+      },
+    ],
+  },
+  {
+    elementType: 'labels.icon',
+    stylers: [
+      {
+        visibility: 'off',
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#616161',
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [
+      {
+        color: '#f5f5f5',
+      },
+    ],
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry.fill',
+    stylers: [
+      {
+        color: '#ffffff',
+      },
+    ],
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#e0e0e0',
+      },
+    ],
+  },
+  {
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#c9c9c9',
+      },
+    ],
+  },
+  {
+    featureType: 'water',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#9e9e9e',
+      },
+    ],
+  },
+];
 
 const libraries: Libraries = ['places'];
 
@@ -89,6 +161,7 @@ const libraries: Libraries = ['places'];
  */
 function GoogleMapComponent({ trip }: { trip: any }) {
   const supabase = createClerkSupabaseClient();
+  const { theme } = useTheme();
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
 
   // Load Google Maps script and required libraries.
@@ -226,24 +299,28 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
         {/* Search Bar */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
-          <Autocomplete
-            onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
-          >
-            <Input
-              type="text"
-              placeholder="Search for a place"
-              className="flex-1 text-black dark:text-white w-[45vh] outline-none border-none hover:border-none hover:outline-none selection:outline-none focus-visible:ring-offset-0 focus-visible:ring-0 font-voyago"
-            />
-          </Autocomplete>
-          <Button
-            onClick={addMarker}
-            variant="default"
-            className="w-[12vh] bg-gray-600 text-white hover:bg-gray-500 font-voyago"
-          >
-            Add
-          </Button>
-        </div>
+        {trip && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
+            <Autocomplete
+              onLoad={(autocomplete) =>
+                (autocompleteRef.current = autocomplete)
+              }
+            >
+              <Input
+                type="text"
+                placeholder="Search for a place"
+                className="flex-1 text-black dark:text-white w-[45vh] outline-none border-none hover:border-none hover:outline-none selection:outline-none focus-visible:ring-offset-0 focus-visible:ring-0 font-voyago"
+              />
+            </Autocomplete>
+            <Button
+              onClick={addMarker}
+              variant="default"
+              className="w-[12vh] bg-gray-600 text-white hover:bg-gray-500 font-voyago"
+            >
+              Add
+            </Button>
+          </div>
+        )}
 
         <div className="rounded-lg shadow-md overflow-hidden ">
           <GoogleMap
@@ -251,7 +328,7 @@ function GoogleMapComponent({ trip }: { trip: any }) {
             zoom={6}
             center={defaultCenter}
             options={{
-              styles: greyMapStyles,
+              styles: theme === 'dark' ? greyMapStyles : lightMapStyles,
               disableDefaultUI: true,
               zoomControl: true,
             }}
@@ -261,7 +338,10 @@ function GoogleMapComponent({ trip }: { trip: any }) {
                 key={index}
                 position={{ lat: place.lat, lng: place.lng }}
                 icon={{
-                  url: './map-pin.png',
+                  url:
+                    theme === 'dark'
+                      ? './map-pin_dark.png'
+                      : 'map-pin_light.png',
                   scaledSize: new window.google.maps.Size(10, 10),
                 }}
               />

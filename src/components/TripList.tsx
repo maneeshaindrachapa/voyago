@@ -19,13 +19,16 @@ import {
   DrawerTrigger,
 } from './ui/drawer';
 import TripForm from './TripForm';
+import { useTheme } from '../context/ThemeContext';
 
 function TripList({
   onTripSelect,
   refresh,
+  onTripUpdate,
 }: {
   onTripSelect: (trip: any) => void;
   refresh: boolean;
+  onTripUpdate: () => void;
 }) {
   const supabase = createClerkSupabaseClient();
   const { user } = useUser();
@@ -35,6 +38,7 @@ function TripList({
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(true);
   const [selectedTripId, setSelectedTripId] = useState(0);
+  const { theme } = useTheme();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -111,9 +115,22 @@ function TripList({
   return (
     <div className="relative h-full flex flex-col">
       {trips.length === 0 ? (
-        <p className="text-base font-medium text-gray-500 text-center">
-          No trips found.
-        </p>
+        <>
+          <p className="text-base font-voyago text-gray-500 text-center mt-4">
+            No Trips planned
+          </p>
+          {theme === 'dark' ? (
+            <img
+              src="./images/trip_plan_dark.svg"
+              className="absolute bottom-0 h-[20vh] aspect-video"
+            />
+          ) : (
+            <img
+              src="./images/trip_plan_light.svg"
+              className="absolute bottom-0 h-[20vh] aspect-video"
+            />
+          )}
+        </>
       ) : (
         <div className="relative h-full">
           <div
@@ -165,7 +182,7 @@ function TripList({
                                   </div>
                                 </div>
                                 <TripForm
-                                  onTripCreated={() => {}}
+                                  onTripUpdate={onTripUpdate}
                                   trip={{
                                     tripname: trip.tripname,
                                     country: trip.country,
