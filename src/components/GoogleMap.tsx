@@ -124,7 +124,6 @@ function GoogleMapComponent({ trip }: { trip: any }) {
   useEffect(() => {
     handleSetCenter(); //set the country selected as the center of google map
     trip != null ? setListOfPlaces(trip.locations) : setListOfPlaces([]);
-    console.log(trip);
   }, [trip]);
 
   /**
@@ -227,7 +226,7 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
         {/* Search Bar */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] max-w-lg items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
           <Autocomplete
             onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
           >

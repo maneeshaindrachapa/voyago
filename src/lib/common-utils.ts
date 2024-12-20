@@ -1,5 +1,7 @@
 import { ISOStringFormat } from 'date-fns';
 import axios from 'axios';
+import { clerkClient } from '@clerk/clerk-sdk-node';
+import { UserResource } from '@clerk/types';
 
 /**
  * Formats an ISO date string into `YYYY-MM-DD` format.
@@ -82,3 +84,48 @@ export const getLocationName = async (
     return 'Unknown location';
   }
 };
+
+/**
+ * Fetches user details from Clerk based on the provided user ID.
+ *
+ * @param {string} userId - The unique ID of the user saved in Clerk.
+ * @returns {Promise<{ name: string; email: string | undefined; profileImageUrl: string; }>}
+ * A promise that resolves to an object containing the user's name, email, and profile image URL.
+ *
+ * @throws {Error} Throws an error if fetching the user details fails.
+ *
+ * @example
+ * ```typescript
+ * const userDetails = await getUserDetails('user_12345');
+ * console.log(userDetails.name); // John Doe
+ * console.log(userDetails.email); // johndoe@example.com
+ * console.log(userDetails.profileImageUrl); // URL to the user's profile image
+ * ```
+ */
+
+export interface UserDetails {
+  fullName: string;
+  email: string;
+  profileImageUrl: string;
+}
+export async function getUserDetailsById(
+  userId: string
+): Promise<UserDetails | null> {
+  try {
+    const user = await clerkClient.users.getUser(userId);
+
+    if (!user) {
+      console.error(`No user found with ID: ${userId}`);
+      return null;
+    }
+
+    return {
+      fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+      email: user.primaryEmailAddress?.emailAddress || 'No email available',
+      profileImageUrl: user.imageUrl || '/default-avatar.png',
+    };
+  } catch (error) {
+    console.error('Error fetching user details from Clerk:', error);
+    return null;
+  }
+}

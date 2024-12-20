@@ -2,10 +2,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { useUser } from '@clerk/clerk-react';
 import { formatDate } from '../lib/common-utils';
-import { ChevronLeft, ChevronRight, Edit, Trash } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit, Share, Trash } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { fetchTripsByUser } from '../lib/trip-service';
 import { toast } from 'sonner';
+
+import { Avatar, AvatarImage } from './ui/avatar';
+import EditTripForm from './EditTripForm';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from './ui/drawer';
 
 function TripList({
   onTripSelect,
@@ -39,6 +52,7 @@ function TripList({
         }
       } catch (err) {
         setError('Error fetching trips');
+        toast.error('Failed to fetch trips. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -46,7 +60,6 @@ function TripList({
     loadTrips();
   }, [supabase, user, onTripSelect, refresh]);
 
-  // Scroll to the next/previous card
   const scrollToCard = (direction: 'left' | 'right') => {
     if (scrollRef.current && scrollRef.current.firstElementChild) {
       const cardWidth = scrollRef.current.firstElementChild.clientWidth + 20;
@@ -66,42 +79,33 @@ function TripList({
       setShowRightButton(newTripId < trips.length - 1);
 
       onTripSelect(trips[newTripId]);
-    } else {
-      console.warn('No child elements found in the scroll container.');
     }
-  };
-
-  const handleEdit = (trip: any) => {
-    console.log('Edit Trip:', trip);
-    // Implement your edit functionality here
   };
 
   const handleDelete = async (tripId: string) => {
     try {
       const { error } = await supabase.from('trips').delete().eq('id', tripId);
       if (error) {
-        console.error('Error deleting trip:', error.message);
+        toast.error('Failed to delete the trip. Please try again.');
       } else {
         setTrips((prevTrips) => prevTrips.filter((trip) => trip.id !== tripId));
-        toast('Trip deleted successfully');
+        toast.success('Trip deleted successfully');
       }
     } catch (err) {
-      console.error('Unexpected error:', err);
+      toast.error('Unexpected error while deleting the trip.');
     }
   };
 
   if (loading || error)
     return (
-      <>
-        <div className="flex flex-col space-y-3 p-2">
-          <Skeleton className="h-[20vh] w-full rounded-xl" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-          </div>
-          <Skeleton className="h-[10vh] w-full rounded-xl" />
+      <div className="flex flex-col space-y-3 p-2">
+        <Skeleton className="h-[20vh] w-full rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
         </div>
-      </>
+        <Skeleton className="h-[10vh] w-full rounded-xl" />
+      </div>
     );
 
   return (
@@ -112,7 +116,6 @@ function TripList({
         </p>
       ) : (
         <div className="relative h-full">
-          {/* Scrollable Cards Container */}
           <div
             ref={scrollRef}
             className="flex gap-4 overflow-x-auto h-full scrollbar-hide"
@@ -122,34 +125,77 @@ function TripList({
               return (
                 <div
                   key={trip.id}
-                  className="flex-shrink-0 w-full h-full rounded-lg shadow-md bg-cover bg-center relative "
+                  className="flex-shrink-0 w-full h-full rounded-lg shadow-md bg-cover bg-center relative"
                   style={{
                     backgroundImage: `url('/backgrounds/${trip.imageurl}.jpg')`,
                   }}
                 >
-                  <div className="absolute inset-0 bg-black/80 rounded-lg"></div>
-
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/60 rounded-lg"></div>
                   <div className="relative flex flex-col justify-between h-full p-4 text-white">
-                    <div className="flex items-center space-x-2 mt-4 justify-between">
-                      <button
-                        onClick={() => handleEdit(trip)}
-                        className="text-white hover:text-white transition-colors"
-                      >
-                        <Edit className="h-3 w-3" />
-                      </button>
-                      <button
+                    <div className="flex items-center space-x-2 mt-4 justify-center">
+                      <Drawer>
+                        <DrawerTrigger>
+                          <Edit className="h-3 w-3" />
+                        </DrawerTrigger>
+                        <DrawerContent className="mx-auto h-[70vh]  max-w-sm justify-center">
+                          <DrawerHeader>
+                            <DrawerTitle className="font-voyago">
+                              {trip.tripname}
+                            </DrawerTitle>
+                            <DrawerDescription>
+                              <div className="mt-4">
+                                <div className="flex items-center space-x-3 mb-8">
+                                  <Avatar className="h-10 w-10">
+                                    <AvatarImage
+                                      src={
+                                        user?.imageUrl || '/default-avatar.png'
+                                      }
+                                      alt={user?.fullName || ''}
+                                    />
+                                  </Avatar>
+                                  <div>
+                                    <p className="font-medium">
+                                      {user?.fullName || 'Unknown User'}
+                                    </p>
+                                    <p className="text-xs">
+                                      {user?.primaryEmailAddress
+                                        ?.emailAddress || ''}
+                                    </p>
+                                  </div>
+                                </div>
+                                <EditTripForm
+                                  key={trip.id}
+                                  trip={{
+                                    tripname: trip.tripname,
+                                    country: trip.country,
+                                    daterange: {
+                                      from: trip.daterange.from,
+                                      to: trip.daterange.to,
+                                    },
+                                    id: trip.id,
+                                  }}
+                                />
+                              </div>
+                            </DrawerDescription>
+                          </DrawerHeader>
+                          <DrawerFooter>
+                            <DrawerClose />
+                          </DrawerFooter>
+                        </DrawerContent>
+                      </Drawer>
+                      <Share className="h-3 w-3" />
+                      <Trash
+                        className="h-3 w-3 text-red-400 hover:text-red-500"
                         onClick={() => handleDelete(trip.id)}
-                        className="text-red-400 hover:text-red-500 transition-colors"
-                      >
-                        <Trash className="h-3 w-3" />
-                      </button>
+                      />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-semibold font-voyago">
+                      <h2 className="text-2xl font-semibold">
                         {trip.tripname}
                       </h2>
-                      <p className="text-sm font-voyago">{trip.country}</p>
-                      <p className="text-sm font-voyago">
+                      <p>{trip.country}</p>
+                      <p>
                         {formatDate(dateRange.from)} -{' '}
                         {formatDate(dateRange.to)}
                       </p>
@@ -162,7 +208,7 @@ function TripList({
           {showLeftButton && (
             <button
               onClick={() => scrollToCard('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full transition"
+              className="absolute left-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -170,7 +216,7 @@ function TripList({
           {showRightButton && (
             <button
               onClick={() => scrollToCard('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full  transition"
+              className="absolute right-0 top-1/2 -translate-y-1/2 text-white p-2 rounded-full"
             >
               <ChevronRight className="h-5 w-5" />
             </button>

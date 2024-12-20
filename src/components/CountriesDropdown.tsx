@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Button } from './ui/button';
+import { ScrollArea } from './ui/scroll-area';
 
 const countries = [
   { code: 'AF', name: 'Afghanistan' },
@@ -261,21 +262,22 @@ export const CountriesDropdown: React.FC<{
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="w-full justify-start">
           {selected || 'Select a country'}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-full max-h-60 overflow-y-auto">
-        {/* Added max-h-60 and overflow-y-auto for scrollable dropdown */}
-        <DropdownMenuLabel>Select Country</DropdownMenuLabel>
-        {countries.map((country) => (
-          <DropdownMenuItem
-            key={country.code}
-            onClick={() => onSelect(country.name)}
-          >
-            {country.name}
-          </DropdownMenuItem>
-        ))}
+      <DropdownMenuContent className="border-none overflow-y-auto">
+        <ScrollArea className="h-[20vh] w-full rounded-md border p-4 z-20">
+          <DropdownMenuLabel>Select Country</DropdownMenuLabel>
+          {countries.map((country) => (
+            <DropdownMenuItem
+              key={country.code}
+              onClick={() => onSelect(country.name)}
+            >
+              {country.name}
+            </DropdownMenuItem>
+          ))}
+        </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '../components/ui/popover';
-import { Plus } from 'lucide-react';
+import { HandCoins, Plane } from 'lucide-react';
 import TripForm from '../components/TripForm';
 import TripList from '../components/TripList';
 import { Toaster } from '../components/ui/sonner';
@@ -50,19 +50,43 @@ export function DashboardPage() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-8">
-            <div className="aspect-video rounded-xl bg-muted/50 md:col-span-1 h-[15vh]">
+            {/* Create Trip */}
+            <div className="aspect-auto rounded-xl bg-muted/50 md:col-span-2 h-[15vh]">
               <div className="flex flex-col h-full items-center justify-center p-4">
                 <Popover>
                   <PopoverTrigger>
                     <div className="flex flex-col items-center justify-center space-y-2 text-primary hover:text-primary/90 cursor-pointer transition-all">
                       <div className="flex items-center space-x-2">
-                        <p className="text-base font-medium hover:scale-105 transition-transform font-funneld">
+                        <Plane className="h-6 w-6 transition-transform hover:scale-125" />
+                        <p className="text-base font-medium hover:scale-105 transition-transform font-funneld font-voyago">
                           Create Trip
                         </p>
-                        <Plus className="h-6 w-6 transition-transform hover:scale-125" />
                       </div>
                       <p className="text-xs text-muted-foreground">
                         Plan your next adventure!
+                      </p>
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px]">
+                    <TripForm onTripCreated={handleTripCreated} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            {/* Handle Budget */}
+            <div className="aspect-auto rounded-xl bg-muted/50 md:col-span-2 h-[15vh]">
+              <div className="flex flex-col h-full items-center justify-center p-4">
+                <Popover>
+                  <PopoverTrigger>
+                    <div className="flex flex-col items-center justify-center space-y-2 text-primary hover:text-primary/90 cursor-pointer transition-all">
+                      <div className="flex items-center space-x-2">
+                        <HandCoins className="h-6 w-6 transition-transform hover:scale-125" />
+                        <p className="text-base font-medium hover:scale-105 transition-transform font-funneld font-voyago">
+                          Handle Budget
+                        </p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Take control of your budget!
                       </p>
                     </div>
                   </PopoverTrigger>
