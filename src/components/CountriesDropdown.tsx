@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Button } from './ui/button';
-import { ScrollArea } from './ui/scroll-area';
 
 const countries = [
   { code: 'AF', name: 'Afghanistan' },
