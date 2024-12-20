@@ -8,7 +8,6 @@ import { fetchTripsByUser } from '../lib/trip-service';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarImage } from './ui/avatar';
-import EditTripForm from './EditTripForm';
 import {
   Drawer,
   DrawerClose,
@@ -19,6 +18,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from './ui/drawer';
+import TripForm from './TripForm';
 
 function TripList({
   onTripSelect,
@@ -164,8 +164,8 @@ function TripList({
                                     </p>
                                   </div>
                                 </div>
-                                <EditTripForm
-                                  key={trip.id}
+                                <TripForm
+                                  onTripCreated={() => {}}
                                   trip={{
                                     tripname: trip.tripname,
                                     country: trip.country,
@@ -175,6 +175,7 @@ function TripList({
                                     },
                                     id: trip.id,
                                   }}
+                                  isUpdated={true}
                                 />
                               </div>
                             </DrawerDescription>

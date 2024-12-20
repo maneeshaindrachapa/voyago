@@ -36,22 +36,41 @@ const formSchema = z.object({
     }),
 });
 
-function TripForm({ onTripCreated }: { onTripCreated: () => void }) {
+export interface TripFormValues {
+  tripname: string;
+  country: string;
+  daterange: {
+    from: string;
+    to: string;
+  };
+  id: string;
+}
+
+function TripForm({
+  onTripCreated,
+  trip,
+  isUpdated,
+}: {
+  onTripCreated: () => void;
+  trip?: TripFormValues;
+  isUpdated?: boolean;
+}) {
   const { user } = useUser();
   const supabase = createClerkSupabaseClient();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      tripname: '',
-      country: '',
+      tripname: trip?.tripname || '',
+      country: trip?.country || '',
       daterange: {
-        from: new Date(),
-        to: addDays(new Date(), 10),
+        from: trip ? new Date(trip.daterange.from) : new Date(),
+        to: trip ? new Date(trip.daterange.to) : addDays(new Date(), 10),
       },
     },
   });
 
-  // Submit handler
+  // Create trip handler
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user) {
       alert('You need to be signed in to create a trip!');
@@ -82,22 +101,60 @@ function TripForm({ onTripCreated }: { onTripCreated: () => void }) {
     }
   };
 
+  // Update trip handler
+  const onUpdated = async (values: z.infer<typeof formSchema>) => {
+    if (!trip) {
+      toast('You need to be have created a trip to update a trip!');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('trips')
+        .update({
+          tripname: values.tripname,
+          country: values.country,
+          daterange: values.daterange,
+        })
+        .eq('id', trip.id);
+
+      if (error) {
+        console.error('Error updating trip:', error.message);
+        toast('Error updating trip. Please try again.');
+      } else {
+        toast('Trip updated successfully!');
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast('An unexpected error occurred');
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={
+          isUpdated ? form.handleSubmit(onUpdated) : form.handleSubmit(onSubmit)
+        }
+        className="space-y-6"
+      >
         {/* Trip Name Field */}
         <FormField
           control={form.control}
           name="tripname"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Trip Name</FormLabel>
+              <FormLabel className="font-voyago tracking-tight">
+                Trip Name
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter your trip name" {...field} />
               </FormControl>
-              <FormDescription>
-                Give your trip a meaningful name.
-              </FormDescription>
+              {!isUpdated && (
+                <FormDescription>
+                  Give your trip a meaningful name.
+                </FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -109,17 +166,21 @@ function TripForm({ onTripCreated }: { onTripCreated: () => void }) {
           name="country"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Country</FormLabel>
+              <FormLabel className="font-voyago tracking-tight">
+                Country
+              </FormLabel>
               <FormControl>
                 {/* Use the CountriesDropdown component */}
                 <CountriesDropdown
                   selected={field.value}
-                  onSelect={(value) => field.onChange(value)} // Update form state
+                  onSelect={(value) => field.onChange(value)}
                 />
               </FormControl>
-              <FormDescription>
-                Select the main country for your trip.
-              </FormDescription>
+              {!isUpdated && (
+                <FormDescription>
+                  Select the main country for your trip.
+                </FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -131,17 +192,20 @@ function TripForm({ onTripCreated }: { onTripCreated: () => void }) {
           name="daterange"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Trip Date Range</FormLabel>
+              <FormLabel className="font-voyago tracking-tight">
+                Trip Date Range
+              </FormLabel>
               <FormControl>
-                {/* Integrate CalendarDateRangePicker */}
                 <CalendarDateRangePicker
-                  {...field}
-                  onChange={(date) => field.onChange(date)} // Update form state on change
+                  dateRange={field.value}
+                  onChange={(range) => field.onChange(range)}
                 />
               </FormControl>
-              <FormDescription>
-                Select the date range for your trip.
-              </FormDescription>
+              {!isUpdated && (
+                <FormDescription>
+                  Select the date range for your trip.
+                </FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}

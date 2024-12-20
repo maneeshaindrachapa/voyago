@@ -266,18 +266,16 @@ export const CountriesDropdown: React.FC<{
           {selected || 'Select a country'}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="border-none overflow-y-auto">
-        <ScrollArea className="h-[20vh] w-full rounded-md border p-4 z-20">
-          <DropdownMenuLabel>Select Country</DropdownMenuLabel>
-          {countries.map((country) => (
-            <DropdownMenuItem
-              key={country.code}
-              onClick={() => onSelect(country.name)}
-            >
-              {country.name}
-            </DropdownMenuItem>
-          ))}
-        </ScrollArea>
+      <DropdownMenuContent className="border-none overflow-y-auto h-[20vh]">
+        <DropdownMenuLabel>Select Country</DropdownMenuLabel>
+        {countries.map((country) => (
+          <DropdownMenuItem
+            key={country.code}
+            onClick={() => onSelect(country.name)}
+          >
+            {country.name}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -8,31 +8,20 @@ import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '../lib/utils';
 
-interface CalendarDateRangePickerProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  from?: Date;
-  to?: Date;
-  onDateChange?: (date: DateRange | undefined) => void;
-}
-
 export function CalendarDateRangePicker({
   className,
-  from,
-  to,
-  onDateChange,
-  ...rest
-}: CalendarDateRangePickerProps) {
-  const [date, setDate] = React.useState<DateRange>({
-    from: from || new Date(),
-    to: to || addDays(new Date(), 10),
-  });
+  dateRange,
+  onChange,
+}: {
+  className?: string;
+  dateRange?: DateRange;
+  onChange: (range: DateRange | undefined) => void;
+}) {
+  const [date, setDate] = React.useState<DateRange | undefined>(dateRange);
 
-  // Handle date selection
-  const handleDateChange = (selectedDate: DateRange | undefined) => {
-    if (selectedDate !== undefined) setDate(selectedDate);
-    if (onDateChange) {
-      onDateChange(selectedDate);
-    }
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDate(range);
+    onChange(range);
   };
 
   return (
@@ -43,7 +32,7 @@ export function CalendarDateRangePicker({
             id="date"
             variant={'outline'}
             className={cn(
-              'justify-start text-left font-normal',
+              'w-full justify-start text-left font-normal',
               !date && 'text-muted-foreground'
             )}
           >
