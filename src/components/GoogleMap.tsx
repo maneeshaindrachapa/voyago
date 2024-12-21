@@ -15,6 +15,7 @@ import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { toast } from 'sonner';
 import { updateTripLocations } from '../lib/trip-service';
 import { useTheme } from '../context/ThemeContext';
+import { useTripContext } from '../context/TripContext';
 
 const mapContainerStyle = {
   width: '100%',
@@ -159,10 +160,11 @@ const libraries: Libraries = ['places'];
  * @param {Object} props - Component props.
  * @param {any} props.trip - The trip object containing the `country` property for map centering.
  */
-function GoogleMapComponent({ trip }: { trip: any }) {
+function GoogleMapComponent() {
   const supabase = createClerkSupabaseClient();
   const { theme } = useTheme();
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+  const { selectedTrip } = useTripContext();
 
   // Load Google Maps script and required libraries.
   const { isLoaded } = useLoadScript({
@@ -195,9 +197,11 @@ function GoogleMapComponent({ trip }: { trip: any }) {
   });
 
   useEffect(() => {
-    handleSetCenter(); //set the country selected as the center of google map
-    trip != null ? setListOfPlaces(trip.locations) : setListOfPlaces([]);
-  }, [trip]);
+    handleSetCenter();
+    selectedTrip != null
+      ? setListOfPlaces(selectedTrip.locations)
+      : setListOfPlaces([]);
+  }, [selectedTrip]);
 
   /**
    * Sets the map center based on the `country` property of the trip object.
@@ -210,10 +214,10 @@ function GoogleMapComponent({ trip }: { trip: any }) {
    * @returns {Promise<void>} Resolves after updating the map center.
    */
   const handleSetCenter = async () => {
-    if (trip) {
+    if (selectedTrip) {
       try {
         const { lat, lng } = await getLatLngFromCountry(
-          trip.country,
+          selectedTrip.country,
           GOOGLE_MAPS_API_KEY
         );
         setDefaultCenter({ lat, lng }); // Update center state
@@ -272,7 +276,11 @@ function GoogleMapComponent({ trip }: { trip: any }) {
   // Save itenary
   const handleSaveItenary = async () => {
     try {
-      await updateTripLocations(supabase, trip.id, listOfPlaces);
+      if (selectedTrip == undefined) {
+        console.log('No trip is selected');
+        return;
+      }
+      await updateTripLocations(supabase, selectedTrip.id, listOfPlaces);
       toast('Trip itinerary updated successfully!');
       setSaveBtn(false);
     } catch (err) {
@@ -299,7 +307,7 @@ function GoogleMapComponent({ trip }: { trip: any }) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
         {/* Search Bar */}
-        {trip && (
+        {selectedTrip && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
             <Autocomplete
               onLoad={(autocomplete) =>

@@ -18,6 +18,7 @@ import { useUser } from '@clerk/clerk-react';
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { toast } from 'sonner';
 import { addDays } from 'date-fns';
+import { addTripRequest, useTripContext } from '../context/TripContext';
 
 // Zod schema including trip name and selected country
 const formSchema = z.object({
@@ -56,7 +57,7 @@ function TripForm({
   isUpdated?: boolean;
 }) {
   const { user } = useUser();
-  const supabase = createClerkSupabaseClient();
+  const { addTrip, updateTrip } = useTripContext();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,29 +77,14 @@ function TripForm({
       alert('You need to be signed in to create a trip!');
       return;
     }
-
-    try {
-      const { data, error } = await supabase.from('trips').insert({
-        tripname: values.tripname,
-        country: values.country,
-        daterange: values.daterange,
-        ownerid: user.id,
-        imageurl: Math.floor(Math.random() * 7) + 1,
-      });
-
-      if (error) {
-        console.error('Error saving trip:', error.message);
-        alert('Error saving trip');
-      } else {
-        console.log('Trip saved successfully:', data);
-        toast('Trip created successfully!');
-        form.reset();
-        onTripUpdate();
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      alert('An unexpected error occurred');
-    }
+    const tripValues: addTripRequest = {
+      tripname: values.tripname,
+      country: values.country,
+      daterange: values.daterange,
+    };
+    addTrip(tripValues);
+    form.reset();
+    onTripUpdate();
   };
 
   // Update trip handler
@@ -107,28 +93,13 @@ function TripForm({
       toast('You need to be have created a trip to update a trip!');
       return;
     }
-
-    try {
-      const { data, error } = await supabase
-        .from('trips')
-        .update({
-          tripname: values.tripname,
-          country: values.country,
-          daterange: values.daterange,
-        })
-        .eq('id', trip.id);
-
-      if (error) {
-        console.error('Error updating trip:', error.message);
-        toast('Error updating trip. Please try again.');
-      } else {
-        toast('Trip updated successfully!');
-        onTripUpdate();
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      toast('An unexpected error occurred');
-    }
+    const tripData = {
+      tripid: trip.id,
+      tripname: values.tripname,
+      country: values.country,
+      daterange: { from: values.daterange.from, to: values.daterange.to },
+    };
+    await updateTrip(tripData);
   };
 
   return (

@@ -10,6 +10,7 @@ let supabaseInstance: ReturnType<typeof createClient>;
 export function createClerkSupabaseClient() {
   if (!supabaseInstance) {
     const { session } = useSession();
+    console.log('Session:', session);
 
     supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
       global: {
@@ -17,6 +18,10 @@ export function createClerkSupabaseClient() {
           const clerkToken = await session?.getToken({
             template: 'supabase',
           });
+
+          if (!clerkToken) {
+            throw new Error('Failed to retrieve Clerk token.');
+          }
 
           const headers = new Headers(options.headers);
           headers.set('Authorization', `Bearer ${clerkToken}`);

@@ -24,7 +24,6 @@ import GoogleMapComponent from '../components/GoogleMap';
 import { useState } from 'react';
 
 export function DashboardPage() {
-  const [selectedTrip, setSelectedTrip] = useState<any | null>(null);
   const [refreshTrips, setRefreshTrips] = useState(false);
 
   const handleTrips = () => {
@@ -100,14 +99,10 @@ export function DashboardPage() {
           <div className="grid auto-rows-min gap-4 md:grid-cols-8">
             {/* Combined TripList and GoogleMap */}
             <div className="rounded-xl bg-muted/50 md:col-span-2 min-h-[40vh]">
-              <TripList
-                onTripSelect={setSelectedTrip}
-                refresh={refreshTrips}
-                onTripUpdate={handleTrips}
-              />
+              <TripList refresh={refreshTrips} onTripUpdate={handleTrips} />
             </div>
             <div className="rounded-xl bg-muted/10 md:col-span-6 min-h-[40vh]">
-              <GoogleMapComponent trip={selectedTrip} />
+              <GoogleMapComponent />
             </div>
           </div>
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />

@@ -1,11 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { useUser } from '@clerk/clerk-react';
 import { formatDate } from '../lib/common-utils';
 import { ChevronLeft, ChevronRight, Edit, Share, Trash } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
-import { fetchTripsByUser } from '../lib/trip-service';
-import { toast } from 'sonner';
 
 import { Avatar, AvatarImage } from './ui/avatar';
 import {
@@ -20,49 +17,28 @@ import {
 } from './ui/drawer';
 import TripForm from './TripForm';
 import { useTheme } from '../context/ThemeContext';
+import { useTripContext } from '../context/TripContext';
 
 function TripList({
-  onTripSelect,
   refresh,
   onTripUpdate,
 }: {
-  onTripSelect: (trip: any) => void;
   refresh: boolean;
   onTripUpdate: () => void;
 }) {
-  const supabase = createClerkSupabaseClient();
   const { user } = useUser();
-  const [trips, setTrips] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(true);
   const [selectedTripId, setSelectedTripId] = useState(0);
   const { theme } = useTheme();
+  const { getAllTrips, trips, deleteTrip, isLoading, setSelectedTrip } =
+    useTripContext();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadTrips = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const fetchedTrips = await fetchTripsByUser(supabase, user.id);
-        setTrips(fetchedTrips);
-        if (fetchedTrips.length > 0) {
-          onTripSelect(fetchedTrips[0]);
-        }
-      } catch (err) {
-        setError('Error fetching trips');
-        toast.error('Failed to fetch trips. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadTrips();
-  }, [supabase, user, onTripSelect, refresh]);
+    getAllTrips();
+  }, []);
 
   const scrollToCard = (direction: 'left' | 'right') => {
     if (scrollRef.current && scrollRef.current.firstElementChild) {
@@ -82,25 +58,15 @@ function TripList({
       setShowLeftButton(newTripId > 0);
       setShowRightButton(newTripId < trips.length - 1);
 
-      onTripSelect(trips[newTripId]);
+      setSelectedTrip(trips[newTripId]);
     }
   };
 
   const handleDelete = async (tripId: string) => {
-    try {
-      const { error } = await supabase.from('trips').delete().eq('id', tripId);
-      if (error) {
-        toast.error('Failed to delete the trip. Please try again.');
-      } else {
-        setTrips((prevTrips) => prevTrips.filter((trip) => trip.id !== tripId));
-        toast.success('Trip deleted successfully');
-      }
-    } catch (err) {
-      toast.error('Unexpected error while deleting the trip.');
-    }
+    deleteTrip(tripId);
   };
 
-  if (loading || error)
+  if (isLoading)
     return (
       <div className="flex flex-col space-y-3 p-2">
         <Skeleton className="h-[20vh] w-full rounded-xl" />
