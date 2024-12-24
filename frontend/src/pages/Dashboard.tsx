@@ -21,7 +21,6 @@ import TripForm from '../components/TripForm';
 import TripList from '../components/TripList';
 import { Toaster } from '../components/ui/sonner';
 import GoogleMapComponent from '../components/GoogleMap';
-import { useState } from 'react';
 
 export function DashboardPage() {
   return (
