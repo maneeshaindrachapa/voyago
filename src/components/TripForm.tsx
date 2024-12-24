@@ -15,7 +15,6 @@ import { Button } from './ui/button';
 import { CountriesDropdown } from './CountriesDropdown';
 import { CalendarDateRangePicker } from './DatePicker';
 import { useUser } from '@clerk/clerk-react';
-import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { toast } from 'sonner';
 import { addDays } from 'date-fns';
 import { addTripRequest, useTripContext } from '../context/TripContext';
@@ -48,11 +47,9 @@ export interface TripFormValues {
 }
 
 function TripForm({
-  onTripUpdate,
   trip,
   isUpdated,
 }: {
-  onTripUpdate: () => void;
   trip?: TripFormValues;
   isUpdated?: boolean;
 }) {
@@ -84,7 +81,6 @@ function TripForm({
     };
     addTrip(tripValues);
     form.reset();
-    onTripUpdate();
   };
 
   // Update trip handler

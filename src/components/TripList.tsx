@@ -19,16 +19,10 @@ import TripForm from './TripForm';
 import { useTheme } from '../context/ThemeContext';
 import { useTripContext } from '../context/TripContext';
 
-function TripList({
-  refresh,
-  onTripUpdate,
-}: {
-  refresh: boolean;
-  onTripUpdate: () => void;
-}) {
+function TripList() {
   const { user } = useUser();
   const [showLeftButton, setShowLeftButton] = useState(false);
-  const [showRightButton, setShowRightButton] = useState(true);
+  const [showRightButton, setShowRightButton] = useState(false);
   const [selectedTripId, setSelectedTripId] = useState(0);
   const { theme } = useTheme();
   const { getAllTrips, trips, deleteTrip, isLoading, setSelectedTrip } =
@@ -37,8 +31,22 @@ function TripList({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    getAllTrips();
+    const fetchTrips = async () => {
+      try {
+        await getAllTrips();
+      } catch (error) {
+        console.error('Error fetching trips:', error);
+      }
+    };
+
+    fetchTrips();
   }, []);
+
+  useEffect(() => {
+    if (trips.length > 1) {
+      setShowRightButton(true);
+    }
+  }, [trips]);
 
   const scrollToCard = (direction: 'left' | 'right') => {
     if (scrollRef.current && scrollRef.current.firstElementChild) {
@@ -148,7 +156,6 @@ function TripList({
                                   </div>
                                 </div>
                                 <TripForm
-                                  onTripUpdate={onTripUpdate}
                                   trip={{
                                     tripname: trip.tripname,
                                     country: trip.country,

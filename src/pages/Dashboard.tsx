@@ -24,12 +24,6 @@ import GoogleMapComponent from '../components/GoogleMap';
 import { useState } from 'react';
 
 export function DashboardPage() {
-  const [refreshTrips, setRefreshTrips] = useState(false);
-
-  const handleTrips = () => {
-    setRefreshTrips((prev) => !prev);
-  };
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -67,7 +61,7 @@ export function DashboardPage() {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-[300px]">
-                    <TripForm onTripUpdate={handleTrips} />
+                    <TripForm />
                   </PopoverContent>
                 </Popover>
               </div>
@@ -90,7 +84,7 @@ export function DashboardPage() {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-[300px]">
-                    <TripForm onTripUpdate={handleTrips} />
+                    <TripForm />
                   </PopoverContent>
                 </Popover>
               </div>
@@ -99,7 +93,7 @@ export function DashboardPage() {
           <div className="grid auto-rows-min gap-4 md:grid-cols-8">
             {/* Combined TripList and GoogleMap */}
             <div className="rounded-xl bg-muted/50 md:col-span-2 min-h-[40vh]">
-              <TripList refresh={refreshTrips} onTripUpdate={handleTrips} />
+              <TripList />
             </div>
             <div className="rounded-xl bg-muted/10 md:col-span-6 min-h-[40vh]">
               <GoogleMapComponent />

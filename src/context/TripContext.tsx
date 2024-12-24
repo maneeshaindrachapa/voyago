@@ -53,8 +53,8 @@ interface TripContextType {
   }) => void;
   deleteTrip: (id: string) => void;
   isLoading: boolean;
-  selectedTrip: TripResponse | undefined;
-  setSelectedTrip: Dispatch<SetStateAction<TripResponse | undefined>>;
+  selectedTrip: TripResponse | null;
+  setSelectedTrip: Dispatch<SetStateAction<TripResponse | null>>;
 }
 
 const TripContext = createContext<TripContextType | undefined>(undefined);
@@ -66,7 +66,7 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
   const supabase = createClerkSupabaseClient();
   const { user } = useUser();
   const [trips, setTrips] = useState<TripResponse[]>([]);
-  const [selectedTrip, setSelectedTrip] = useState<TripResponse | undefined>();
+  const [selectedTrip, setSelectedTrip] = useState<TripResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Get all trips
@@ -79,6 +79,8 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
     setTrips(fetchedTrips);
     if (fetchedTrips.length > 0) {
       setSelectedTrip(fetchedTrips[0]);
+    } else {
+      setSelectedTrip(null);
     }
     setIsLoading(false);
   };
@@ -110,9 +112,8 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const deleteTrip = async (tripid: string) => {
-    const tripDeleted = await deleteTripById(supabase, tripid);
-    if (tripDeleted)
-      setTrips((prevTrips) => prevTrips.filter((trip) => trip.id !== tripid));
+    await deleteTripById(supabase, tripid);
+    await getAllTrips();
   };
 
   return (
