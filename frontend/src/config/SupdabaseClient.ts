@@ -10,7 +10,6 @@ let supabaseInstance: ReturnType<typeof createClient>;
 export function createClerkSupabaseClient() {
   if (!supabaseInstance) {
     const { session } = useSession();
-    console.log('Session:', session);
 
     supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
       global: {
