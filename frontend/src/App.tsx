@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { ThemeProvider } from './context/ThemeContext';
 import { DashboardPage } from './pages/Dashboard';
 import { TripProvider } from './context/TripContext';
+import UserProvider from './context/UserContext';
 
 const App: React.FC = () => {
   const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_FRONTEND_API;
@@ -30,7 +31,9 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <TripProvider>
-                    <DashboardPage />
+                    <UserProvider>
+                      <DashboardPage />
+                    </UserProvider>
                   </TripProvider>
                 </ProtectedRoute>
               }

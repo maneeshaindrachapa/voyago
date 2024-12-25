@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { formatDate } from '../lib/common-utils';
-import { ChevronLeft, ChevronRight, Edit, Share, Trash } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit, Trash } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 
 import { Avatar, AvatarImage } from './ui/avatar';
@@ -18,6 +18,7 @@ import {
 import TripForm from './TripForm';
 import { useTheme } from '../context/ThemeContext';
 import { useTripContext } from '../context/TripContext';
+import ShareTripForm from './ShareTripForm';
 
 function TripList() {
   const { user } = useUser();
@@ -175,19 +176,19 @@ function TripList() {
                           </DrawerFooter>
                         </DrawerContent>
                       </Drawer>
-                      <Share className="h-3 w-3" />
+                      <ShareTripForm trip={trip} />
                       <Trash
                         className="h-3 w-3 text-red-400 hover:text-red-500"
                         onClick={() => handleDelete(trip.id)}
                       />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-semibold">
+                      <h2 className="text-2xl font-semibold font-voyago">
                         {trip.tripname}
                       </h2>
-                      <p>{trip.country}</p>
-                      <p>
-                        {formatDate(dateRange.from)} -{' '}
+                      <p className="text-sm">{trip.country}</p>
+                      <p className="text-xs">
+                        {formatDate(dateRange.from)} |{' '}
                         {formatDate(dateRange.to)}
                       </p>
                     </div>
