@@ -21,6 +21,7 @@ import TripForm from '../components/TripForm';
 import TripList from '../components/TripList';
 import { Toaster } from '../components/ui/sonner';
 import GoogleMapComponent from '../components/GoogleMap';
+import Notifications from '../components/Notifications';
 
 export function DashboardPage() {
   return (
@@ -28,16 +29,20 @@ export function DashboardPage() {
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Trips</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+          <div className="flex flex-row items-center justify-between px-4 w-full">
+            <div className="flex flex-row items-center gap-2">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Trips</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+
+            <Notifications />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

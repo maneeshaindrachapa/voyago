@@ -73,29 +73,48 @@ export const fetchNotificationsByTrip = async (
 };
 
 /**
- * Fetches all notifications for a specific user.
+ * Fetches notifications with trip details for a specific user.
  *
+ * @param supabase - The Supabase client instance.
  * @param userId - The ID of the user to fetch notifications for.
- * @returns An array of notifications or an error.
+ * @returns Notifications with trip details.
  */
-export const fetchNotificationsbyUserId = async (
+export const fetchUnreadNotificationsByUserId = async (
   supabase: SupabaseClient,
   userId: string
 ) => {
   try {
     const { data, error } = await supabase
       .from('notifications')
-      .select('*')
+      .select(
+        `
+        *,
+        trips (
+          id,
+          tripname,
+          country,
+          daterange,
+          ownerid,
+          created_at,
+          imageurl,
+          locations
+        )
+      `
+      )
       .eq('user_id', userId)
+      .eq('is_read', false)
       .order('created_at', { ascending: false });
 
     if (error) {
-      throw new Error(`Error fetching notifications: ${error.message}`);
+      throw new Error(`Error fetching read notifications: ${error.message}`);
     }
 
     return data;
   } catch (error) {
-    console.error('Error fetching notifications:', error);
+    console.error(
+      'Error fetching read notifications with trip details:',
+      error
+    );
     throw error;
   }
 };

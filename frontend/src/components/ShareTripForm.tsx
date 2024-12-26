@@ -71,7 +71,7 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
     userIds: string[],
     trip: TripResponse
   ) => {
-    const message = `You have been invited to join a trip : ${trip.tripname}`;
+    const message = `You have been invited to join a trip-${trip.tripname}`;
     const result = await addNotificationsForTripShare(
       supabase,
       userIds,

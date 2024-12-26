@@ -1,18 +1,20 @@
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import {
-  fetchNotificationsbyUserId,
+  fetchUnreadNotificationsByUserId,
   notificationMarkAsRead,
 } from '../lib/notification-service';
 import { useUser } from '@clerk/clerk-react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { TripResponse } from './TripContext';
 
-interface Notification {
+export interface Notification {
   id: string;
   user_id: string;
-  trip_id?: string;
+  trip_id: string | null;
   message: string;
   is_read: boolean;
   created_at: string;
+  trips?: TripResponse;
 }
 
 interface NotificationContextType {
@@ -38,7 +40,10 @@ export const NotificationProvider = ({
     const fetchUserNotifications = async () => {
       try {
         if (user) {
-          const data = await fetchNotificationsbyUserId(supabase, user.id);
+          const data = await fetchUnreadNotificationsByUserId(
+            supabase,
+            user.id
+          );
           setNotifications(data || []);
         } else {
           console.log('User is null or undefined');
@@ -49,7 +54,7 @@ export const NotificationProvider = ({
     };
 
     fetchUserNotifications();
-  }, [user]);
+  }, [user, notifications]);
 
   const markNotificationAsRead = async (notificationId: string) => {
     try {
