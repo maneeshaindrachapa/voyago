@@ -18,6 +18,7 @@ import { useUser } from '@clerk/clerk-react';
 import { toast } from 'sonner';
 import { addDays } from 'date-fns';
 import { addTripRequest, useTripContext } from '../context/TripContext';
+import { Dispatch, SetStateAction } from 'react';
 
 // Zod schema including trip name and selected country
 const formSchema = z.object({
@@ -49,9 +50,11 @@ export interface TripFormValues {
 function TripForm({
   trip,
   isUpdated,
+  setClose,
 }: {
   trip?: TripFormValues;
   isUpdated?: boolean;
+  setClose?: Dispatch<SetStateAction<boolean>>;
 }) {
   const { user } = useUser();
   const { addTrip, updateTrip } = useTripContext();
@@ -81,6 +84,7 @@ function TripForm({
     };
     addTrip(tripValues);
     form.reset();
+    setClose ? setClose(false) : '';
   };
 
   // Update trip handler

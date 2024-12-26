@@ -22,8 +22,11 @@ import TripList from '../components/TripList';
 import { Toaster } from '../components/ui/sonner';
 import GoogleMapComponent from '../components/GoogleMap';
 import Notifications from '../components/Notifications';
+import { useState } from 'react';
 
 export function DashboardPage() {
+  const [openTripCreate, setOpenTripCreate] = useState(false);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -50,7 +53,7 @@ export function DashboardPage() {
             {/* Create Trip */}
             <div className="aspect-auto rounded-xl bg-muted/50 md:col-span-2 h-[15vh]">
               <div className="flex flex-col h-full items-center justify-center p-4">
-                <Popover>
+                <Popover open={openTripCreate} onOpenChange={setOpenTripCreate}>
                   <PopoverTrigger>
                     <div className="flex flex-col items-center justify-center space-y-2 text-primary hover:text-primary/90 cursor-pointer transition-all">
                       <div className="flex items-center space-x-2">
@@ -65,7 +68,7 @@ export function DashboardPage() {
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-[300px]">
-                    <TripForm />
+                    <TripForm setClose={setOpenTripCreate} />
                   </PopoverContent>
                 </Popover>
               </div>

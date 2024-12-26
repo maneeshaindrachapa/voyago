@@ -39,6 +39,8 @@ export interface TripResponse {
     lat: number;
     lng: number;
     location: string;
+    userId: string;
+    color: string;
   }[];
   sharedusers: { userId: string }[];
 }

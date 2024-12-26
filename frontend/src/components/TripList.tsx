@@ -7,10 +7,8 @@ import { Skeleton } from './ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -20,6 +18,16 @@ import { useTheme } from '../context/ThemeContext';
 import { useTripContext } from '../context/TripContext';
 import ShareTripForm from './ShareTripForm';
 import { useUserContext } from '../context/UserContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
+import { Button } from './ui/button';
 
 function TripList() {
   const { user } = useUser();
@@ -222,10 +230,27 @@ function TripList() {
                             </DrawerContent>
                           </Drawer>
                           <ShareTripForm trip={trip} />
-                          <Trash
-                            className="h-3 w-3 text-red-400 hover:text-red-500"
-                            onClick={() => handleDelete(trip.id)}
-                          />
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Trash className="h-3 w-3 text-red-400 hover:text-red-500" />
+                            </DialogTrigger>
+                            <DialogContent className="bg-muted">
+                              <DialogHeader>
+                                <DialogTitle>
+                                  Are you absolutely sure?
+                                </DialogTitle>
+                                <DialogDescription>
+                                  This action cannot be undone. Are you sure you
+                                  want to permanently delete this trip?
+                                </DialogDescription>
+                              </DialogHeader>
+                              <DialogFooter>
+                                <Button onClick={() => handleDelete(trip.id)}>
+                                  Confirm Delete
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         </>
                       )}
                     </div>

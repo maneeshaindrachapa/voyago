@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   GoogleMap,
   useLoadScript,
-  Marker,
   Autocomplete,
   Libraries,
 } from '@react-google-maps/api';
@@ -17,6 +16,8 @@ import { updateTripLocations } from '../lib/trip-service';
 import { useTheme } from '../context/ThemeContext';
 import { useTripContext } from '../context/TripContext';
 import { useUser } from '@clerk/clerk-react';
+import GoogleMarker from './GoogleMarker';
+import { useUserContext } from '../context/UserContext';
 
 const mapContainerStyle = {
   width: '100%',
@@ -148,6 +149,19 @@ const lightMapStyles = [
   },
 ];
 
+const blueGradient = [
+  '#0A2342',
+  '#143D59',
+  '#1F5986',
+  '#2A76B3',
+  '#348CD3',
+  '#4DA3E6',
+  '#67BBF9',
+  '#89CEFF',
+  '#A4DBFF',
+  '#C0E8FF',
+];
+
 const libraries: Libraries = ['places'];
 
 function GoogleMapComponent() {
@@ -156,6 +170,7 @@ function GoogleMapComponent() {
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
   const { selectedTrip } = useTripContext();
   const { user } = useUser();
+  const { users } = useUserContext();
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -167,8 +182,14 @@ function GoogleMapComponent() {
       lat: number;
       lng: number;
       location: string;
+      userId: string;
+      color: string;
     }[]
   >([]);
+
+  const [pinColor, setPinColor] = useState(
+    blueGradient[Math.floor(Math.random() * blueGradient.length)]
+  );
 
   const [saveBtn, setSaveBtn] = useState(false);
 
@@ -187,6 +208,10 @@ function GoogleMapComponent() {
     selectedTrip != null
       ? setListOfPlaces(selectedTrip.locations)
       : setListOfPlaces([]);
+    setPinColor(
+      selectedTrip?.locations.find((loc) => loc.userId === user?.id)?.color ||
+        blueGradient[Math.floor(Math.random() * blueGradient.length)]
+    );
   }, [selectedTrip]);
 
   const handleSetCenter = async () => {
@@ -222,7 +247,13 @@ function GoogleMapComponent() {
 
     setListOfPlaces((prevSetListOfPlaces) => [
       ...prevSetListOfPlaces,
-      { lat: location.lat, lng: location.lng, location: locationName },
+      {
+        lat: location.lat,
+        lng: location.lng,
+        location: locationName,
+        userId: user?.id || '',
+        color: pinColor,
+      },
     ]);
 
     setSaveBtn(true);
@@ -260,7 +291,7 @@ function GoogleMapComponent() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
-        {selectedTrip && user?.id == selectedTrip.ownerid && (
+        {selectedTrip && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
             <Autocomplete
               onLoad={(autocomplete) =>
@@ -295,16 +326,11 @@ function GoogleMapComponent() {
             }}
           >
             {listOfPlaces.map((place, index) => (
-              <Marker
+              <GoogleMarker
                 key={index}
-                position={{ lat: place.lat, lng: place.lng }}
-                icon={{
-                  url:
-                    theme === 'dark'
-                      ? './map-pin_dark.png'
-                      : 'map-pin_light.png',
-                  scaledSize: new window.google.maps.Size(10, 10),
-                }}
+                place={place}
+                index={index}
+                color={place.color}
               />
             ))}
           </GoogleMap>
@@ -335,18 +361,24 @@ function GoogleMapComponent() {
                       Lat: {location.lat.toFixed(4)}, Lng:{' '}
                       {location.lng.toFixed(4)}
                     </p>
+                    <p className="text-xs text-gray-500">
+                      {users?.find((u) => u.id === location.userId)?.firstName}{' '}
+                      {users?.find((u) => u.id === location.userId)?.lastName}
+                    </p>
                   </div>
-                  <SquareMinus
-                    color="#D0312D"
-                    onClick={() => {
-                      setListOfPlaces((prev) =>
-                        prev.filter(
-                          (_, locationIndex) => locationIndex !== index
-                        )
-                      );
-                      setSaveBtn(true);
-                    }}
-                  />
+                  {user?.id === location.userId && (
+                    <SquareMinus
+                      color="#D0312D"
+                      onClick={() => {
+                        setListOfPlaces((prev) =>
+                          prev.filter(
+                            (_, locationIndex) => locationIndex !== index
+                          )
+                        );
+                        setSaveBtn(true);
+                      }}
+                    />
+                  )}
                 </li>
               ))}
             </ul>

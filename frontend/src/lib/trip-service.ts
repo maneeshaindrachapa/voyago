@@ -104,7 +104,13 @@ export const fetchTripsByUser = async (
 export const updateTripLocations = async (
   supabase: SupabaseClient,
   tripId: string,
-  locations: { lat: number; lng: number; location: string }[]
+  locations: {
+    lat: number;
+    lng: number;
+    location: string;
+    userId: string;
+    color: string;
+  }[]
 ) => {
   try {
     const { data, error } = await supabase
