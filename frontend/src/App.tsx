@@ -8,6 +8,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { DashboardPage } from './pages/Dashboard';
 import { TripProvider } from './context/TripContext';
 import UserProvider from './context/UserContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 const App: React.FC = () => {
   const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_FRONTEND_API;
@@ -32,7 +33,9 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <TripProvider>
                     <UserProvider>
-                      <DashboardPage />
+                      <NotificationProvider>
+                        <DashboardPage />
+                      </NotificationProvider>
                     </UserProvider>
                   </TripProvider>
                 </ProtectedRoute>

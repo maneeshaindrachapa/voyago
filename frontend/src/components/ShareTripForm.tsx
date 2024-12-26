@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Drawer,
   DrawerContent,
@@ -17,11 +17,36 @@ import { Skeleton } from './ui/skeleton';
 import { useUser } from '@clerk/clerk-react';
 import { TripResponse } from '../context/TripContext';
 
+import { toast } from 'sonner';
+import { createClerkSupabaseClient } from '../config/SupdabaseClient';
+import {
+  addNotificationsForTripShare,
+  fetchNotificationsByTrip,
+} from '../lib/notification-service';
+
 const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
   const { users, loading, error } = useUserContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [preSelectedUsers, setPreSelectedUsers] = useState<string[]>([]);
   const { user } = useUser();
+  const supabase = createClerkSupabaseClient();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchPreSelectedUsers = async () => {
+      try {
+        const sharedUsers = await fetchNotificationsByTrip(supabase, trip.id);
+        const sharedUserIds = sharedUsers.map((u) => u.user_id);
+        setPreSelectedUsers(sharedUserIds);
+        setSelectedUsers(sharedUserIds);
+      } catch (err) {
+        console.error('Error fetching shared users:', err);
+      }
+    };
+
+    fetchPreSelectedUsers();
+  }, [trip.id]);
 
   const filteredUsers = users?.filter(
     (user_) =>
@@ -32,6 +57,8 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
   );
 
   const toggleUserSelection = (userId: string) => {
+    if (preSelectedUsers.includes(userId)) return;
+
     setSelectedUsers((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
@@ -39,8 +66,32 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
     );
   };
 
+  // Send notification for trip share
+  const handleShareTripWithUsers = async (
+    userIds: string[],
+    trip: TripResponse
+  ) => {
+    const message = `You have been invited to join a trip : ${trip.tripname}`;
+    const result = await addNotificationsForTripShare(
+      supabase,
+      userIds,
+      trip.id,
+      message
+    );
+
+    if (result.success) {
+      toast.success('Shared trip successfully!');
+      console.log('Shared trip successfully!');
+      setOpen(false);
+    } else {
+      toast.error('Failed to share trip');
+      console.error('Failed to share trip', result.error);
+      setOpen(false);
+    }
+  };
+
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Share className="h-3 w-3" />
       </DrawerTrigger>
@@ -102,8 +153,13 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
                       selectedUsers.includes(user.id) ? 'default' : 'outline'
                     }
                     onClick={() => toggleUserSelection(user.id)}
+                    disabled={preSelectedUsers.includes(user.id)}
                   >
-                    {selectedUsers.includes(user.id) ? 'Selected' : 'Select'}
+                    {preSelectedUsers.includes(user.id)
+                      ? 'Shared'
+                      : selectedUsers.includes(user.id)
+                        ? 'Selected'
+                        : 'Select'}
                   </Button>
                 </li>
               ))}
@@ -140,8 +196,19 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
           <Button
             className="w-full mt-4"
             onClick={() => {
-              console.log('Shared with:', selectedUsers);
+              const selectedUserIds = selectedUsers
+                .map((userId) => {
+                  const user = users?.find((u) => u.id === userId);
+                  return user?.id;
+                })
+                .filter((id): id is string => id !== undefined);
+              handleShareTripWithUsers(selectedUserIds, trip);
             }}
+            disabled={
+              selectedUsers.filter(
+                (userId) => !preSelectedUsers.includes(userId)
+              ).length === 0
+            }
           >
             Share Trip
           </Button>

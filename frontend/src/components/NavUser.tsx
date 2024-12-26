@@ -14,7 +14,7 @@ export function NavUser() {
   const { user } = useUser();
   const { isMobile } = useSidebar();
 
-  if (!user) return null; // Return nothing if user data is unavailable
+  if (!user) return null;
 
   const userName = user.fullName || 'Guest';
   const userEmail = user.primaryEmailAddress?.emailAddress || 'No email';
@@ -22,7 +22,7 @@ export function NavUser() {
   const handleContainerClick = (e: React.MouseEvent) => {
     const button = e.currentTarget.querySelector('button');
     if (button) {
-      button.click(); // Programmatically trigger the UserButton click
+      button.click();
     }
   };
 
