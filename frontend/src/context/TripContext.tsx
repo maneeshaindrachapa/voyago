@@ -96,12 +96,10 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
     getAllTrips();
   }, [user]);
 
-  // Update trip list
   const updateTripList = (data: any) => {
     setTrips((prevTrips) => [...prevTrips, data]);
   };
 
-  // Add trip
   const addTrip = async (trip: addTripRequest) => {
     if (!user) {
       alert('You need to be signed in to create a trip!');
@@ -111,7 +109,6 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
     await getAllTrips();
   };
 
-  // update trip
   const updateTrip = async (tripData: {
     tripid: string;
     tripname: string;

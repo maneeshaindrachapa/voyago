@@ -132,7 +132,7 @@ function TripList() {
                         <DrawerTrigger>
                           <Edit className="h-3 w-3" />
                         </DrawerTrigger>
-                        <DrawerContent className="mx-auto h-[70vh]  max-w-sm justify-center">
+                        <DrawerContent className="mx-auto max-w-sm justify-center">
                           <DrawerHeader>
                             <DrawerTitle className="font-voyago">
                               {trip.tripname}
@@ -162,7 +162,9 @@ function TripList() {
                                   {trip.sharedUsers.map((u) => u.userId)
                                     .length > 0 && (
                                     <>
-                                      <p>Shared with</p>
+                                      <p className="font-voyago tracking-tighter">
+                                        Shared with
+                                      </p>
                                       <div className="mt-1 mb-4">
                                         <ul className="list-disc pl-0 text-sm flex flex-row">
                                           {trip.sharedUsers
@@ -212,9 +214,6 @@ function TripList() {
                               </div>
                             </DrawerDescription>
                           </DrawerHeader>
-                          <DrawerFooter>
-                            <DrawerClose />
-                          </DrawerFooter>
                         </DrawerContent>
                       </Drawer>
                       <ShareTripForm trip={trip} />

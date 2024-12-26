@@ -63,7 +63,6 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
     );
   };
 
-  // Send notification for trip share
   const handleShareTripWithUsers = async (
     userIds: string[],
     trip: TripResponse

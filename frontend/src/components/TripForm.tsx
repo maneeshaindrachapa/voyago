@@ -104,15 +104,14 @@ function TripForm({
         onSubmit={
           isUpdated ? form.handleSubmit(onUpdated) : form.handleSubmit(onSubmit)
         }
-        className="space-y-6"
+        className="space-y-6 mb-0 pb-0"
       >
-        {/* Trip Name Field */}
         <FormField
           control={form.control}
           name="tripname"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-voyago tracking-tight">
+              <FormLabel className="font-voyago tracking-tighter">
                 Trip Name
               </FormLabel>
               <FormControl>
@@ -128,17 +127,15 @@ function TripForm({
           )}
         />
 
-        {/* Country Selection Field */}
         <FormField
           control={form.control}
           name="country"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-voyago tracking-tight">
+              <FormLabel className="font-voyago tracking-tighter">
                 Country
               </FormLabel>
               <FormControl>
-                {/* Use the CountriesDropdown component */}
                 <CountriesDropdown
                   selected={field.value}
                   onSelect={(value) => field.onChange(value)}
@@ -154,13 +151,12 @@ function TripForm({
           )}
         />
 
-        {/* Date Range Picker Field */}
         <FormField
           control={form.control}
           name="daterange"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-voyago tracking-tight">
+              <FormLabel className="font-voyago tracking-tighter">
                 Trip Date Range
               </FormLabel>
               <FormControl>
@@ -179,7 +175,6 @@ function TripForm({
           )}
         />
 
-        {/* Submit Button */}
         <Button type="submit" className="rounded-md w-full">
           {isUpdated ? 'Update Trip' : 'Create Trip'}
         </Button>

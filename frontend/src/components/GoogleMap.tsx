@@ -149,30 +149,17 @@ const lightMapStyles = [
 
 const libraries: Libraries = ['places'];
 
-/**
- * GoogleMapComponent
- *
- * A reusable React component to render a Google Map with:
- * - Centered map based on a given trip location.
- * - Optional markers for user interaction or search.
- * - Get the location name
- *
- * @param {Object} props - Component props.
- * @param {any} props.trip - The trip object containing the `country` property for map centering.
- */
 function GoogleMapComponent() {
   const supabase = createClerkSupabaseClient();
   const { theme } = useTheme();
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
   const { selectedTrip } = useTripContext();
 
-  // Load Google Maps script and required libraries.
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries,
   });
 
-  // State to hold the list of locations of the markers
   const [listOfPlaces, setListOfPlaces] = useState<
     {
       lat: number;
@@ -181,19 +168,16 @@ function GoogleMapComponent() {
     }[]
   >([]);
 
-  // State to have the save button for trip itenary
   const [saveBtn, setSaveBtn] = useState(false);
 
-  // Ref for the Google Maps Autocomplete instance.
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  // State for setting the default center of the map.
   const [defaultCenter, setDefaultCenter] = useState<{
     lat: number;
     lng: number;
   }>({
-    lat: 37.7749, // Default latitude (San Francisco)
-    lng: -122.4194, // Default longitude (San Francisco)
+    lat: 37.7749,
+    lng: -122.4194,
   });
 
   useEffect(() => {
@@ -203,16 +187,6 @@ function GoogleMapComponent() {
       : setListOfPlaces([]);
   }, [selectedTrip]);
 
-  /**
-   * Sets the map center based on the `country` property of the trip object.
-   *
-   * This function fetches the latitude and longitude of the given country
-   * using the `getLatLngFromCountry` utility function.
-   *
-   * @async
-   * @function handleSetCenter
-   * @returns {Promise<void>} Resolves after updating the map center.
-   */
   const handleSetCenter = async () => {
     if (selectedTrip) {
       try {
@@ -220,60 +194,38 @@ function GoogleMapComponent() {
           selectedTrip.country,
           GOOGLE_MAPS_API_KEY
         );
-        setDefaultCenter({ lat, lng }); // Update center state
+        setDefaultCenter({ lat, lng });
       } catch (error) {
         console.error('Error fetching coordinates:', error);
       }
     }
   };
 
-  /**
-   * Adds a marker to the map based on the selected location from the Autocomplete input.
-   *
-   * This function:
-   * 1. Retrieves the selected place using the Autocomplete reference.
-   * 2. Extracts the latitude and longitude of the location.
-   * 3. Updates the markers state with the new marker and its associated name (formatted address).
-   *
-   * @async
-   * @function addMarker
-   * @returns {Promise<void>} Resolves after adding the marker to the state.
-   *
-   * @throws Will silently return if:
-   * - The Autocomplete reference is invalid.
-   * - The selected place has no valid geometry or location.
-   */
   const addMarker = async () => {
-    if (!autocompleteRef.current) return; // Check if ref is valid
+    if (!autocompleteRef.current) return;
 
-    // Retrieve the selected place details
     const place = autocompleteRef.current.getPlace();
     if (!place || !place.geometry || !place.geometry.location) return;
 
-    // Extract latitude and longitude from the place
     const location = {
       lat: place.geometry.location.lat(),
       lng: place.geometry.location.lng(),
     };
 
-    // Fetch and add the location name to the marker
     const locationName = await getLocationName(
       location.lat,
       location.lng,
       GOOGLE_MAPS_API_KEY
     );
 
-    // Add location to the state
     setListOfPlaces((prevSetListOfPlaces) => [
       ...prevSetListOfPlaces,
       { lat: location.lat, lng: location.lng, location: locationName },
     ]);
 
-    // Save Button enabled
     setSaveBtn(true);
   };
 
-  // Save itenary
   const handleSaveItenary = async () => {
     try {
       if (selectedTrip == undefined) {
@@ -306,7 +258,6 @@ function GoogleMapComponent() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
-        {/* Search Bar */}
         {selectedTrip && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
             <Autocomplete
