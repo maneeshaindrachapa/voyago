@@ -4,6 +4,7 @@ import {
   fetchTripsByUser,
   saveTrip,
   updateTripByTripId,
+  updateTripSharedUsersByTripId,
 } from '../lib/trip-service';
 import { useUser } from '@clerk/clerk-react';
 import { ISOStringFormat } from 'date-fns';
@@ -12,6 +13,7 @@ import React, {
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 import { DateRange } from 'react-day-picker';
@@ -37,6 +39,7 @@ export interface TripResponse {
     lng: number;
     location: string;
   }[];
+  sharedUsers: { userId: string }[];
 }
 
 // Define the context shape
@@ -55,6 +58,10 @@ interface TripContextType {
   isLoading: boolean;
   selectedTrip: TripResponse | null;
   setSelectedTrip: Dispatch<SetStateAction<TripResponse | null>>;
+  updateTripSharedUsers: (
+    tripid: string,
+    sharedUsers: { userId: string }[]
+  ) => void;
 }
 
 const TripContext = createContext<TripContextType | undefined>(undefined);
@@ -84,6 +91,10 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    getAllTrips();
+  }, [user]);
 
   // Update trip list
   const updateTripList = (data: any) => {
@@ -116,6 +127,14 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
     await getAllTrips();
   };
 
+  const updateTripSharedUsers = async (
+    tripid: string,
+    sharedUsers: { userId: string }[]
+  ) => {
+    await updateTripSharedUsersByTripId(supabase, tripid, sharedUsers);
+    await getAllTrips();
+  };
+
   return (
     <TripContext.Provider
       value={{
@@ -128,6 +147,7 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
         isLoading,
         selectedTrip,
         setSelectedTrip,
+        updateTripSharedUsers,
       }}
     >
       {children}

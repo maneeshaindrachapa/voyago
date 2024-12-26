@@ -19,13 +19,10 @@ import { TripResponse } from '../context/TripContext';
 
 import { toast } from 'sonner';
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
-import {
-  addNotificationsForTripShare,
-  fetchNotificationsByTrip,
-} from '../lib/notification-service';
+import { addNotificationsForTripShare } from '../lib/notification-service';
 
 const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
-  const { users, loading, error } = useUserContext();
+  const { users, loading } = useUserContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [preSelectedUsers, setPreSelectedUsers] = useState<string[]>([]);
@@ -36,8 +33,8 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
   useEffect(() => {
     const fetchPreSelectedUsers = async () => {
       try {
-        const sharedUsers = await fetchNotificationsByTrip(supabase, trip.id);
-        const sharedUserIds = sharedUsers.map((u) => u.user_id);
+        const sharedUsers = trip.sharedUsers;
+        const sharedUserIds = sharedUsers.map((u) => u.userId);
         setPreSelectedUsers(sharedUserIds);
         setSelectedUsers(sharedUserIds);
       } catch (err) {
@@ -192,7 +189,6 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
             </div>
           )}
 
-          {/* Share Button */}
           <Button
             className="w-full mt-4"
             onClick={() => {

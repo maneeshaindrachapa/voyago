@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Mountain } from 'lucide-react';
+import { Bell, CircleCheck, CircleX, Mountain } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 import { Button } from './ui/button';
 import { useNotificationContext } from '../context/NotificationContext';
@@ -15,7 +15,6 @@ const Notifications = () => {
 
   return (
     <div className="relative">
-      {/* Popover Trigger */}
       <Popover>
         <PopoverTrigger asChild>
           <button className="relative focus:outline-none">
@@ -27,13 +26,13 @@ const Notifications = () => {
             )}
           </button>
         </PopoverTrigger>
-
-        {/* Popover Content */}
         <PopoverContent className="w-96 p-4 bg-muted border rounded-md shadow-md">
           <h3 className="text-sm font-semibold mb-2">Notifications</h3>
           <div className="divide-y">
             {notifications.length === 0 ? (
-              <div className="py-2 text-center text-sm">No notifications</div>
+              <div className="py-2 text-center text-sm">
+                No new notifications
+              </div>
             ) : (
               notifications.map((notification) => (
                 <div
@@ -47,7 +46,7 @@ const Notifications = () => {
                       <Mountain className="h-5 w-5 text-red-500" />
                     )}
                     <div className="flex-1">
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm font-voyago tracking-tighter">
                         {notification.message}
                       </p>
                       <p className="text-xs text-gray-400">
@@ -55,19 +54,34 @@ const Notifications = () => {
                       </p>
                     </div>
                     {!notification.is_read && (
-                      <Button
-                        size="sm"
-                        variant="link"
-                        className="text-xs text-blue-500 hover:underline"
-                        onClick={() => markNotificationAsRead(notification.id)}
-                      >
-                        Mark as read
-                      </Button>
+                      <div className="flex flex-col">
+                        <Button
+                          size="sm"
+                          variant="link"
+                          className="text-xs text-green-500 hover:underline"
+                          onClick={() =>
+                            markNotificationAsRead(notification, true)
+                          }
+                        >
+                          <CircleCheck className="text-green-500 h-4 w-4 " />
+                          Accept
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="link"
+                          className="text-xs text-red-500 hover:underline"
+                          onClick={() =>
+                            markNotificationAsRead(notification, false)
+                          }
+                        >
+                          <CircleX className=" text-red-500 h-4 w-4" />
+                          Decline
+                        </Button>
+                      </div>
                     )}
                   </div>
                   {notification.trips && (
                     <div className="flex items-center gap-4 p-2">
-                      {/* Avatar */}
                       <Avatar className="flex-shrink-0">
                         <AvatarImage
                           src={
@@ -85,8 +99,6 @@ const Notifications = () => {
                             ?.lastName?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-
-                      {/* Trip Details */}
                       <div className="flex-1 text-xs text-gray-500">
                         <p>
                           <strong>Trip Name:</strong>{' '}

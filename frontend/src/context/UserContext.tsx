@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import axios from 'axios';
 
-// Define the user structure
 interface User {
   id: string;
   email: string | null;
@@ -16,21 +15,18 @@ interface User {
   imageUrl: string | null;
 }
 
-// Define the context type
 interface UserContextType {
   users: User[] | null;
   loading: boolean;
   error: string | null;
 }
 
-// Default context value
 const UserContext = createContext<UserContextType>({
   users: null,
   loading: true,
   error: null,
 });
 
-// Define the provider
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,7 +48,6 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
             imageUrl: user.imageUrl || null,
           };
         });
-        console.log(simplifiedUsers);
         setUsers(simplifiedUsers);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch users');
@@ -74,7 +69,6 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
 export default UserProvider;
 
-// Custom hook to use the UserContext
 export const useUserContext = () => {
   return useContext(UserContext);
 };

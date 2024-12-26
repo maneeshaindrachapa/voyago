@@ -97,7 +97,8 @@ export const fetchUnreadNotificationsByUserId = async (
           ownerid,
           created_at,
           imageurl,
-          locations
+          locations,
+          sharedUsers
         )
       `
       )
@@ -106,13 +107,13 @@ export const fetchUnreadNotificationsByUserId = async (
       .order('created_at', { ascending: false });
 
     if (error) {
-      throw new Error(`Error fetching read notifications: ${error.message}`);
+      throw new Error(`Error fetching unread notifications: ${error.message}`);
     }
 
     return data;
   } catch (error) {
     console.error(
-      'Error fetching read notifications with trip details:',
+      'Error fetching unread notifications with trip details:',
       error
     );
     throw error;
@@ -127,12 +128,13 @@ export const fetchUnreadNotificationsByUserId = async (
  */
 export const notificationMarkAsRead = async (
   supabase: SupabaseClient,
-  notificationId: string
+  notificationId: string,
+  accept: boolean
 ) => {
   try {
     const { error } = await supabase
       .from('notifications')
-      .update({ is_read: true })
+      .update({ is_read: true, accept: accept })
       .eq('id', notificationId);
 
     if (error) {

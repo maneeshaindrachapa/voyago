@@ -6,6 +6,8 @@ import {
 import { useUser } from '@clerk/clerk-react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { TripResponse } from './TripContext';
+import { updateTripSharedUsersByTripId } from '../lib/trip-service';
+import { toast } from 'sonner';
 
 export interface Notification {
   id: string;
@@ -19,7 +21,7 @@ export interface Notification {
 
 interface NotificationContextType {
   notifications: Notification[];
-  markNotificationAsRead: (notificationId: string) => void;
+  markNotificationAsRead: (notification: Notification, accept: boolean) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType>({
@@ -56,14 +58,36 @@ export const NotificationProvider = ({
     fetchUserNotifications();
   }, [user, notifications]);
 
-  const markNotificationAsRead = async (notificationId: string) => {
+  const markNotificationAsRead = async (
+    notification: Notification,
+    accept: boolean
+  ) => {
     try {
-      await notificationMarkAsRead(supabase, notificationId);
+      await notificationMarkAsRead(supabase, notification.id, accept);
+      if (user && notification.trips) {
+        const updatedSharedUsers = notification.trips.sharedUsers.some(
+          (sharedUser) => sharedUser.userId === user?.id
+        )
+          ? notification.trips.sharedUsers
+          : [...notification.trips.sharedUsers, { userId: user?.id || '' }];
+        await updateTripSharedUsersByTripId(
+          supabase,
+          notification.trips.id,
+          updatedSharedUsers
+        );
+        accept
+          ? toast.success(
+              'You have accepted the shared trip request for:' +
+                notification.trips.tripname
+            )
+          : toast.warning(
+              'You have declined the shared trip request for:' +
+                notification.trips.tripname
+            );
+      }
       setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, is_read: true }
-            : notification
+        prev.map((n) =>
+          n.id === notification.id ? { ...n, is_read: true } : n
         )
       );
     } catch (error) {

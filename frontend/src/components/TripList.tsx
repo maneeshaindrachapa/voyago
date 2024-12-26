@@ -4,7 +4,7 @@ import { formatDate } from '../lib/common-utils';
 import { ChevronLeft, ChevronRight, Edit, Trash } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 
-import { Avatar, AvatarImage } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   Drawer,
   DrawerClose,
@@ -19,6 +19,7 @@ import TripForm from './TripForm';
 import { useTheme } from '../context/ThemeContext';
 import { useTripContext } from '../context/TripContext';
 import ShareTripForm from './ShareTripForm';
+import { useUserContext } from '../context/UserContext';
 
 function TripList() {
   const { user } = useUser();
@@ -28,6 +29,7 @@ function TripList() {
   const { theme } = useTheme();
   const { getAllTrips, trips, deleteTrip, isLoading, setSelectedTrip } =
     useTripContext();
+  const { users } = useUserContext();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -137,7 +139,7 @@ function TripList() {
                             </DrawerTitle>
                             <DrawerDescription>
                               <div className="mt-4">
-                                <div className="flex items-center space-x-3 mb-8">
+                                <div className="flex items-center space-x-3 mb-4">
                                   <Avatar className="h-10 w-10">
                                     <AvatarImage
                                       src={
@@ -155,6 +157,45 @@ function TripList() {
                                         ?.emailAddress || ''}
                                     </p>
                                   </div>
+                                </div>
+                                <div className="pt-0 mt-0">
+                                  {trip.sharedUsers.map((u) => u.userId)
+                                    .length > 0 && (
+                                    <>
+                                      <p>Shared with</p>
+                                      <div className="mt-1 mb-4">
+                                        <ul className="list-disc pl-0 text-sm flex flex-row">
+                                          {trip.sharedUsers
+                                            .map((u) => u.userId)
+                                            .map((userId) => {
+                                              const user = users?.find(
+                                                (u) => u.id === userId
+                                              );
+                                              return (
+                                                <li
+                                                  key={userId}
+                                                  className="flex  items-center justify-between"
+                                                >
+                                                  <Avatar className="mr-1">
+                                                    <AvatarImage
+                                                      src={user?.imageUrl || ''}
+                                                    />
+                                                    <AvatarFallback>
+                                                      {user?.firstName?.charAt(
+                                                        0
+                                                      )}
+                                                      {user?.lastName?.charAt(
+                                                        0
+                                                      )}
+                                                    </AvatarFallback>
+                                                  </Avatar>
+                                                </li>
+                                              );
+                                            })}
+                                        </ul>
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
                                 <TripForm
                                   trip={{
