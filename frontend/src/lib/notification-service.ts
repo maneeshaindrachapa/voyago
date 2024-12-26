@@ -98,7 +98,7 @@ export const fetchUnreadNotificationsByUserId = async (
           created_at,
           imageurl,
           locations,
-          sharedUsers
+          sharedusers
         )
       `
       )

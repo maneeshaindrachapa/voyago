@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { updateTripLocations } from '../lib/trip-service';
 import { useTheme } from '../context/ThemeContext';
 import { useTripContext } from '../context/TripContext';
+import { useUser } from '@clerk/clerk-react';
 
 const mapContainerStyle = {
   width: '100%',
@@ -154,6 +155,7 @@ function GoogleMapComponent() {
   const { theme } = useTheme();
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
   const { selectedTrip } = useTripContext();
+  const { user } = useUser();
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -258,7 +260,7 @@ function GoogleMapComponent() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="col-span-2 relative">
-        {selectedTrip && (
+        {selectedTrip && user?.id == selectedTrip.ownerid && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
             <Autocomplete
               onLoad={(autocomplete) =>

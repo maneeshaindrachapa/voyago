@@ -33,7 +33,7 @@ const ShareTripForm = ({ trip }: { trip: TripResponse }) => {
   useEffect(() => {
     const fetchPreSelectedUsers = async () => {
       try {
-        const sharedUsers = trip.sharedUsers;
+        const sharedUsers = trip.sharedusers;
         const sharedUserIds = sharedUsers.map((u) => u.userId);
         setPreSelectedUsers(sharedUserIds);
         setSelectedUsers(sharedUserIds);

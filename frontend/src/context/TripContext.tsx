@@ -2,6 +2,7 @@ import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import {
   deleteTripById,
   fetchTripsByUser,
+  fetchTripsSharedWithUser,
   saveTrip,
   updateTripByTripId,
   updateTripSharedUsersByTripId,
@@ -39,7 +40,7 @@ export interface TripResponse {
     lng: number;
     location: string;
   }[];
-  sharedUsers: { userId: string }[];
+  sharedusers: { userId: string }[];
 }
 
 // Define the context shape
@@ -82,10 +83,25 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
     setIsLoading(true);
-    const fetchedTrips = await fetchTripsByUser(supabase, user.id);
-    setTrips(fetchedTrips);
-    if (fetchedTrips.length > 0) {
-      setSelectedTrip(fetchedTrips[0]);
+    // Fetch trips owned by the user
+    const ownedTrips = await fetchTripsByUser(supabase, user.id);
+
+    // Fetch trips shared with the user
+    const sharedTrips = await fetchTripsSharedWithUser(supabase, user.id);
+
+    // Combine owned trips and shared trips, ensuring no duplicates
+    const combinedTrips = [
+      ...ownedTrips,
+      ...sharedTrips.filter(
+        (sharedTrip) =>
+          !ownedTrips.some((ownedTrip) => ownedTrip.id === sharedTrip.id)
+      ),
+    ];
+
+    // Update the state
+    setTrips(combinedTrips);
+    if (combinedTrips.length > 0) {
+      setSelectedTrip(combinedTrips[0]);
     } else {
       setSelectedTrip(null);
     }

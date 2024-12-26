@@ -56,7 +56,7 @@ export const NotificationProvider = ({
     };
 
     fetchUserNotifications();
-  }, [user, notifications]);
+  }, [user]);
 
   const markNotificationAsRead = async (
     notification: Notification,
@@ -65,11 +65,11 @@ export const NotificationProvider = ({
     try {
       await notificationMarkAsRead(supabase, notification.id, accept);
       if (user && notification.trips) {
-        const updatedSharedUsers = notification.trips.sharedUsers.some(
+        const updatedSharedUsers = notification.trips.sharedusers.some(
           (sharedUser) => sharedUser.userId === user?.id
         )
-          ? notification.trips.sharedUsers
-          : [...notification.trips.sharedUsers, { userId: user?.id || '' }];
+          ? notification.trips.sharedusers
+          : [...notification.trips.sharedusers, { userId: user?.id || '' }];
         await updateTripSharedUsersByTripId(
           supabase,
           notification.trips.id,

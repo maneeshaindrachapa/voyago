@@ -1,15 +1,8 @@
 import { addTripRequest, TripResponse } from '../context/TripContext';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { json } from 'body-parser';
 import { toast } from 'sonner';
 
-/**
- * Saves a new trip to the database.
- *
- * @param supabase - The Supabase client instance for database operations.
- * @param tripData - The trip data to be saved.
- *
- * @returns A promise that resolves when the trip is successfully saved or rejects with an error.
- */
 export async function saveTrip(
   supabase: SupabaseClient,
   tripData: addTripRequest,
@@ -37,13 +30,6 @@ export async function saveTrip(
   }
 }
 
-/**
- * Deletes a trip from the database.
- *
- * @param {SupabaseClient} supabase - The Supabase client instance for database operations.
- * @param {string} tripId - The ID of the trip to be deleted.
- *
- */
 export async function deleteTripById(supabase: SupabaseClient, tripId: string) {
   try {
     const { error } = await supabase.from('trips').delete().eq('id', tripId);
@@ -62,20 +48,6 @@ export async function deleteTripById(supabase: SupabaseClient, tripId: string) {
   }
 }
 
-/**
- * Updates a trip in the database.
- *
- * @param supabase - The Supabase client instance for database operations.
- * @param tripId - The ID of the trip to update.
- * @param tripData - An object containing updated trip details.
- * @param tripData.tripname - The updated name of the trip.
- * @param tripData.country - The updated country of the trip.
- * @param tripData.daterange - The updated date range of the trip.
- * @param tripData.daterange.from - The start date of the trip in Date format.
- * @param tripData.daterange.to - The end date of the trip in Date format.
- * @param onTripUpdate - A callback function to trigger after a successful trip update.
- * @returns {Promise<void>} - Resolves when the update is successful or rejects with an error.
- */
 export async function updateTripByTripId(
   supabase: SupabaseClient,
   tripData: {
@@ -107,13 +79,6 @@ export async function updateTripByTripId(
   }
 }
 
-/**
- * Fetches trips for a specific user.
- *
- * @param supabase - The Supabase client instance.
- * @param userId - The ID of the user to fetch trips for.
- * @returns A promise resolving to the list of trips or an error.
- */
 export const fetchTripsByUser = async (
   supabase: SupabaseClient,
   userId: string
@@ -136,14 +101,6 @@ export const fetchTripsByUser = async (
   }
 };
 
-/**
- * Updates the locations for a specific trip.
- *
- * @param supabase - The Supabase client instance.
- * @param tripId - The ID of the trip to update.
- * @param locations - An array of locations to be updated in the 'locations' JSONB column.
- * @returns A promise that resolves to the updated data or throws an error.
- */
 export const updateTripLocations = async (
   supabase: SupabaseClient,
   tripId: string,
@@ -167,23 +124,15 @@ export const updateTripLocations = async (
   }
 };
 
-/**
- * Updates the locations for a specific trip.
- *
- * @param supabase - The Supabase client instance.
- * @param tripId - The ID of the trip to update.
- * @param locations - An array of locations to be updated in the 'locations' JSONB column.
- * @returns A promise that resolves to the updated data or throws an error.
- */
 export const updateTripSharedUsersByTripId = async (
   supabase: SupabaseClient,
   tripId: string,
-  sharedUsers: { userId: string }[]
+  sharedusers: { userId: string }[]
 ) => {
   try {
     const { data, error } = await supabase
       .from('trips')
-      .update({ sharedUsers })
+      .update({ sharedusers })
       .eq('id', tripId);
 
     if (error) {
@@ -195,5 +144,28 @@ export const updateTripSharedUsersByTripId = async (
   } catch (err) {
     console.error('Unexpected error:', err);
     throw err;
+  }
+};
+
+export const fetchTripsSharedWithUser = async (
+  supabase: SupabaseClient,
+  userId: string
+): Promise<TripResponse[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('trips')
+      .select('*')
+      .filter('sharedusers', 'cs', JSON.stringify([{ userId: userId }]));
+
+    console.log('Raw data from Supabase:', data);
+
+    if (error) {
+      throw new Error(`Error fetching trips: ${error.message}`);
+    }
+
+    return data as TripResponse[];
+  } catch (error) {
+    console.error('Error fetching trips shared with the user:', error);
+    throw error;
   }
 };

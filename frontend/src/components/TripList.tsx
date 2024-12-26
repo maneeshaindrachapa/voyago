@@ -128,109 +128,134 @@ function TripList() {
                   <div className="absolute inset-0 bg-black/60 rounded-lg"></div>
                   <div className="relative flex flex-col justify-between h-full p-4 text-white">
                     <div className="flex items-center space-x-2 mt-4 justify-center">
-                      <Drawer>
-                        <DrawerTrigger>
-                          <Edit className="h-3 w-3" />
-                        </DrawerTrigger>
-                        <DrawerContent className="mx-auto max-w-sm justify-center">
-                          <DrawerHeader>
-                            <DrawerTitle className="font-voyago">
-                              {trip.tripname}
-                            </DrawerTitle>
-                            <DrawerDescription>
-                              <div className="mt-4">
-                                <div className="flex items-center space-x-3 mb-4">
-                                  <Avatar className="h-10 w-10">
-                                    <AvatarImage
-                                      src={
-                                        user?.imageUrl || '/default-avatar.png'
-                                      }
-                                      alt={user?.fullName || ''}
-                                    />
-                                  </Avatar>
-                                  <div>
-                                    <p className="font-medium">
-                                      {user?.fullName || 'Unknown User'}
-                                    </p>
-                                    <p className="text-xs">
-                                      {user?.primaryEmailAddress
-                                        ?.emailAddress || ''}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="pt-0 mt-0">
-                                  {trip.sharedUsers.map((u) => u.userId)
-                                    .length > 0 && (
-                                    <>
-                                      <p className="font-voyago tracking-tighter">
-                                        Shared with
-                                      </p>
-                                      <div className="mt-1 mb-4">
-                                        <ul className="list-disc pl-0 text-sm flex flex-row">
-                                          {trip.sharedUsers
-                                            .map((u) => u.userId)
-                                            .map((userId) => {
-                                              const user = users?.find(
-                                                (u) => u.id === userId
-                                              );
-                                              return (
-                                                <li
-                                                  key={userId}
-                                                  className="flex  items-center justify-between"
-                                                >
-                                                  <Avatar className="mr-1">
-                                                    <AvatarImage
-                                                      src={user?.imageUrl || ''}
-                                                    />
-                                                    <AvatarFallback>
-                                                      {user?.firstName?.charAt(
-                                                        0
-                                                      )}
-                                                      {user?.lastName?.charAt(
-                                                        0
-                                                      )}
-                                                    </AvatarFallback>
-                                                  </Avatar>
-                                                </li>
-                                              );
-                                            })}
-                                        </ul>
+                      {trip.ownerid == user?.id && (
+                        <>
+                          <Drawer>
+                            <DrawerTrigger>
+                              <Edit className="h-3 w-3" />
+                            </DrawerTrigger>
+                            <DrawerContent className="mx-auto max-w-sm justify-center">
+                              <DrawerHeader>
+                                <DrawerTitle className="font-voyago">
+                                  {trip.tripname}
+                                </DrawerTitle>
+                                <DrawerDescription>
+                                  <div className="mt-4">
+                                    <div className="flex items-center space-x-3 mb-4">
+                                      <Avatar className="h-10 w-10">
+                                        <AvatarImage
+                                          src={
+                                            user?.imageUrl ||
+                                            '/default-avatar.png'
+                                          }
+                                          alt={user?.fullName || ''}
+                                        />
+                                      </Avatar>
+                                      <div>
+                                        <p className="font-medium">
+                                          {user?.fullName || 'Unknown User'}
+                                        </p>
+                                        <p className="text-xs">
+                                          {user?.primaryEmailAddress
+                                            ?.emailAddress || ''}
+                                        </p>
                                       </div>
-                                    </>
-                                  )}
-                                </div>
-                                <TripForm
-                                  trip={{
-                                    tripname: trip.tripname,
-                                    country: trip.country,
-                                    daterange: {
-                                      from: trip.daterange.from,
-                                      to: trip.daterange.to,
-                                    },
-                                    id: trip.id,
-                                  }}
-                                  isUpdated={true}
-                                />
-                              </div>
-                            </DrawerDescription>
-                          </DrawerHeader>
-                        </DrawerContent>
-                      </Drawer>
-                      <ShareTripForm trip={trip} />
-                      <Trash
-                        className="h-3 w-3 text-red-400 hover:text-red-500"
-                        onClick={() => handleDelete(trip.id)}
-                      />
+                                    </div>
+                                    <div className="pt-0 mt-0">
+                                      {trip.sharedusers.map((u) => u.userId)
+                                        .length > 0 && (
+                                        <>
+                                          <p className="font-voyago tracking-tighter">
+                                            Shared with
+                                          </p>
+                                          <div className="mt-1 mb-4">
+                                            <ul className="list-disc pl-0 text-sm flex flex-row">
+                                              {trip.sharedusers
+                                                .map((u) => u.userId)
+                                                .map((userId) => {
+                                                  const user = users?.find(
+                                                    (u) => u.id === userId
+                                                  );
+                                                  return (
+                                                    <li
+                                                      key={userId}
+                                                      className="flex  items-center justify-between"
+                                                    >
+                                                      <Avatar className="mr-1">
+                                                        <AvatarImage
+                                                          src={
+                                                            user?.imageUrl || ''
+                                                          }
+                                                        />
+                                                        <AvatarFallback>
+                                                          {user?.firstName?.charAt(
+                                                            0
+                                                          )}
+                                                          {user?.lastName?.charAt(
+                                                            0
+                                                          )}
+                                                        </AvatarFallback>
+                                                      </Avatar>
+                                                    </li>
+                                                  );
+                                                })}
+                                            </ul>
+                                          </div>
+                                        </>
+                                      )}
+                                    </div>
+                                    <TripForm
+                                      trip={{
+                                        tripname: trip.tripname,
+                                        country: trip.country,
+                                        daterange: {
+                                          from: trip.daterange.from,
+                                          to: trip.daterange.to,
+                                        },
+                                        id: trip.id,
+                                      }}
+                                      isUpdated={true}
+                                    />
+                                  </div>
+                                </DrawerDescription>
+                              </DrawerHeader>
+                            </DrawerContent>
+                          </Drawer>
+                          <ShareTripForm trip={trip} />
+                          <Trash
+                            className="h-3 w-3 text-red-400 hover:text-red-500"
+                            onClick={() => handleDelete(trip.id)}
+                          />
+                        </>
+                      )}
                     </div>
                     <div>
-                      <h2 className="text-2xl font-semibold font-voyago">
-                        {trip.tripname}
-                      </h2>
-                      <p className="text-sm">{trip.country}</p>
-                      <p className="text-xs">
-                        {formatDate(dateRange.from)} |{' '}
-                        {formatDate(dateRange.to)}
-                      </p>
+                      <div className="flex flex-row items-center justify-between">
+                        <div>
+                          <h2 className="text-2xl font-semibold font-voyago">
+                            {trip.tripname}
+                          </h2>
+                          <p className="text-sm">{trip.country}</p>
+                          <p className="text-xs">
+                            {formatDate(dateRange.from)} |{' '}
+                            {formatDate(dateRange.to)}
+                          </p>
+                        </div>
+                        <div className="flex justify-center ">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage
+                              src={
+                                users?.find((u) => u.id === trip.ownerid)
+                                  ?.imageUrl || '/default-avatar.png'
+                              }
+                              alt={
+                                users?.find((u) => u.id === trip.ownerid)
+                                  ?.firstName || 'Owner'
+                              }
+                            />
+                          </Avatar>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
