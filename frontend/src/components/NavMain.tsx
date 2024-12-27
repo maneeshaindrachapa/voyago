@@ -1,40 +1,86 @@
-import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { ListChecks, SquareTerminal } from 'lucide-react';
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '../components/ui/collapsible';
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from './ui/sidebar';
+import { ThemeToggle } from './ThemeToggle';
+import { TripItineraryPrint } from './TripItenaryPrint';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
+import { useTripContext } from '../context/TripContext';
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: LucideIcon;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
+export function NavMain() {
+  const { selectedTrip } = useTripContext();
+  // This is sample data.
+  const data = {
+    navMain: [
+      {
+        title: 'Playground',
+        url: '#',
+        icon: SquareTerminal,
+        isActive: true,
+        items: [
+          {
+            title: 'History',
+            url: '#',
+          },
+          {
+            title: 'Starred',
+            url: '#',
+          },
+          {
+            title: 'Settings',
+            url: '#',
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Settings</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        <SidebarMenuItem>
+          <SidebarMenuSubButton>
+            <ThemeToggle isHideText={false} />
+          </SidebarMenuSubButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          {selectedTrip && (
+            <SidebarMenuSubButton>
+              <Dialog>
+                <DialogTrigger className="flex flex-row justify-start text-xs">
+                  <ListChecks className="w-4 h-4 mr-2" />
+                  Print Trip Itenary -{selectedTrip.tripname}
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="mb-2">
+                      Do you want to print itenary for - {selectedTrip.tripname}{' '}
+                    </DialogTitle>
+                    <DialogDescription>
+                      <TripItineraryPrint />
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+            </SidebarMenuSubButton>
+          )}
+        </SidebarMenuItem>
+      </SidebarMenu>
+      {/* <SidebarMenu>
+        {data.navMain.map((item) => (
           <Collapsible
             key={item.title}
             asChild
@@ -65,7 +111,7 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         ))}
-      </SidebarMenu>
+      </SidebarMenu> */}
     </SidebarGroup>
   );
 }

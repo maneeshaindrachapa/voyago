@@ -4,12 +4,13 @@ import {
   useLoadScript,
   Autocomplete,
   Libraries,
+  DirectionsRenderer,
 } from '@react-google-maps/api';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { getLatLngFromCountry, getLocationName } from '../lib/common-utils';
 import { Skeleton } from './ui/skeleton';
-import { Save, SquareMinus } from 'lucide-react';
+import { Route, Save, SquareMinus } from 'lucide-react';
 import { createClerkSupabaseClient } from '../config/SupdabaseClient';
 import { toast } from 'sonner';
 import { updateTripLocations } from '../lib/trip-service';
@@ -168,7 +169,7 @@ function GoogleMapComponent() {
   const supabase = createClerkSupabaseClient();
   const { theme } = useTheme();
   const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
-  const { selectedTrip } = useTripContext();
+  const { selectedTrip, getAllTrips } = useTripContext();
   const { user } = useUser();
   const { users } = useUserContext();
 
@@ -186,6 +187,9 @@ function GoogleMapComponent() {
       color: string;
     }[]
   >([]);
+
+  const [directions, setDirections] =
+    useState<google.maps.DirectionsResult | null>(null);
 
   const [pinColor, setPinColor] = useState(
     blueGradient[Math.floor(Math.random() * blueGradient.length)]
@@ -267,11 +271,45 @@ function GoogleMapComponent() {
       }
       await updateTripLocations(supabase, selectedTrip.id, listOfPlaces);
       toast('Trip itinerary updated successfully!');
+      await getAllTrips();
       setSaveBtn(false);
     } catch (err) {
       console.error('Error saving itinerary:', err);
       toast('Failed to update itinerary');
     }
+  };
+
+  const calculateDirections = () => {
+    if (listOfPlaces.length < 2) {
+      toast('Add at least two locations to calculate directions.');
+      return;
+    }
+
+    const directionsService = new google.maps.DirectionsService();
+    const waypoints = listOfPlaces.slice(1, -1).map((place) => ({
+      location: { lat: place.lat, lng: place.lng },
+      stopover: true,
+    }));
+
+    directionsService.route(
+      {
+        origin: { lat: listOfPlaces[0].lat, lng: listOfPlaces[0].lng },
+        destination: {
+          lat: listOfPlaces[listOfPlaces.length - 1].lat,
+          lng: listOfPlaces[listOfPlaces.length - 1].lng,
+        },
+        waypoints,
+        travelMode: google.maps.TravelMode.DRIVING,
+        optimizeWaypoints: true,
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+          setDirections(result);
+        } else {
+          console.error(`Directions request failed due to ${status}`);
+        }
+      }
+    );
   };
 
   if (!isLoaded)
@@ -325,6 +363,7 @@ function GoogleMapComponent() {
               zoomControl: true,
             }}
           >
+            {directions && <DirectionsRenderer directions={directions} />}
             {listOfPlaces.map((place, index) => (
               <GoogleMarker
                 key={index}
@@ -334,14 +373,20 @@ function GoogleMapComponent() {
               />
             ))}
           </GoogleMap>
+          <div>
+            <Button
+              onClick={calculateDirections}
+              className="absolute bottom-1 left-10 w-[9vh] transform -translate-x-1/2 z-10 flex items-center gap-2 bg-white dark:bg-black p-2 rounded-lg hover:bg-white dark:hover:bg-black"
+            >
+              <Route className="dark:text-white text-black" />
+            </Button>
+          </div>
         </div>
       </div>
       <div className="relative">
         <div className="col-span-1 bg-white dark:bg-muted/50 p-4 rounded-lg shadow-md overflow-auto h-[28vh]">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold font-voyago">
-              Trip Itinerary
-            </h2>
+            <h2 className="text-lg font-semibold font-voyago">Itinerary</h2>
             {saveBtn && (
               <Save width={15} height={15} onClick={handleSaveItenary} />
             )}

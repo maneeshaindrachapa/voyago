@@ -112,9 +112,7 @@ const TripSuggestions = () => {
 
   return (
     <div className="p-4 rounded-lg max-h-[70vh] overflow-y-scroll">
-      <h1 className="text-lg font-semibold mb-4 font-voyago">
-        Trip Suggestions
-      </h1>
+      <h1 className="text-lg font-semibold mb-4 font-voyago">Near By</h1>
 
       <div className="space-y-8">
         {error && <p className="text-red-500">{error}</p>}
