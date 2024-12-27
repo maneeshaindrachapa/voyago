@@ -112,7 +112,7 @@ const TripSuggestions = () => {
 
   return (
     <div className="p-4 rounded-lg max-h-[70vh] overflow-y-scroll">
-      <h1 className="text-lg font-semibold mb-4 font-voyago tracking-tighter">
+      <h1 className="text-lg font-semibold mb-4 font-voyago">
         Trip Suggestions
       </h1>
 
@@ -141,12 +141,14 @@ const TripSuggestions = () => {
                           className="w-8 h-8 rounded object-cover"
                         />
                       )}
-                      <p className="text-xs font-medium text-left ml-2 mr-2">
-                        {place.name}
-                      </p>
-                      <Badge className="text-xs">
-                        {place.rating ? `${place.rating}/5` : 'N/A'}
-                      </Badge>
+                      <div className="flex flex-auto flex-row justify-between items-center">
+                        <p className="text-xs font-medium text-left ml-2 mr-2">
+                          {place.name}
+                        </p>
+                        <Badge className="text-xs max-h-[2.5vh]">
+                          {place.rating ? `${place.rating}/5` : 'N/A'}
+                        </Badge>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -169,12 +171,14 @@ const TripSuggestions = () => {
                           className="w-8 h-8 rounded object-cover"
                         />
                       )}
-                      <p className="text-xs font-medium text-left ml-2 mr-2">
-                        {place.name}
-                      </p>
-                      <Badge className="text-xs">
-                        {place.rating ? `${place.rating}/5` : 'N/A'}
-                      </Badge>
+                      <div className="flex flex-auto flex-row justify-between items-center">
+                        <p className="text-xs font-medium text-left ml-2 mr-2">
+                          {place.name}
+                        </p>
+                        <Badge className="text-xs max-h-[2.5vh]">
+                          {place.rating ? `${place.rating}/5` : 'N/A'}
+                        </Badge>
+                      </div>
                     </div>
                   ))}
                 </div>

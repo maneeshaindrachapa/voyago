@@ -115,9 +115,7 @@ function TripForm({
           name="tripname"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-voyago tracking-tighter">
-                Trip Name
-              </FormLabel>
+              <FormLabel className="font-voyago">Trip Name</FormLabel>
               <FormControl>
                 <Input placeholder="Enter your trip name" {...field} />
               </FormControl>
@@ -136,9 +134,7 @@ function TripForm({
           name="country"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-voyago tracking-tighter">
-                Country
-              </FormLabel>
+              <FormLabel className="font-voyago">Country</FormLabel>
               <FormControl>
                 <CountriesDropdown
                   selected={field.value}
@@ -160,9 +156,7 @@ function TripForm({
           name="daterange"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-voyago tracking-tighter">
-                Trip Date Range
-              </FormLabel>
+              <FormLabel className="font-voyago ">Trip Date Range</FormLabel>
               <FormControl>
                 <CalendarDateRangePicker
                   dateRange={field.value}

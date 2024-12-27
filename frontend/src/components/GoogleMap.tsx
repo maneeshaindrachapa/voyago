@@ -317,7 +317,7 @@ function GoogleMapComponent() {
         <div className="rounded-lg shadow-md overflow-hidden ">
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
-            zoom={6}
+            zoom={2}
             center={defaultCenter}
             options={{
               styles: theme === 'dark' ? greyMapStyles : lightMapStyles,
@@ -339,7 +339,7 @@ function GoogleMapComponent() {
       <div className="relative">
         <div className="col-span-1 bg-white dark:bg-muted/50 p-4 rounded-lg shadow-md overflow-auto h-[28vh]">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold font-voyago tracking-tighter">
+            <h2 className="text-lg font-semibold font-voyago">
               Trip Itinerary
             </h2>
             {saveBtn && (

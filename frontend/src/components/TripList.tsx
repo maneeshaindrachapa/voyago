@@ -173,7 +173,7 @@ function TripList() {
                                       {trip.sharedusers.map((u) => u.userId)
                                         .length > 0 && (
                                         <>
-                                          <p className="font-voyago tracking-tighter">
+                                          <p className="font-voyago">
                                             Shared with
                                           </p>
                                           <div className="mt-1 mb-4">

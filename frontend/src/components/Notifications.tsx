@@ -46,7 +46,7 @@ const Notifications = () => {
                       <Mountain className="h-5 w-5 text-red-500" />
                     )}
                     <div className="flex-1">
-                      <p className="text-sm font-voyago tracking-tighter">
+                      <p className="text-sm font-voyago">
                         {notification.message}
                       </p>
                       <p className="text-xs text-gray-400">
