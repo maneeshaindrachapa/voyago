@@ -1,10 +1,5 @@
 import { AppSidebar } from '../components/AppSideBar';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from '../components/ui/breadcrumb';
+
 import { Separator } from '../components/ui/separator';
 import {
   SidebarInset,
@@ -37,13 +32,6 @@ export function DashboardPage() {
             <div className="flex flex-row items-center gap-2">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Trips</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
             </div>
 
             <Notifications />

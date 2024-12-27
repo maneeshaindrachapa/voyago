@@ -69,7 +69,6 @@ interface TripContextType {
 
 const TripContext = createContext<TripContextType | undefined>(undefined);
 
-// Provider component
 export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -100,7 +99,6 @@ export const TripProvider: React.FC<{ children: React.ReactNode }> = ({
       ),
     ];
 
-    // Update the state
     setTrips(combinedTrips);
     if (combinedTrips.length > 0) {
       setSelectedTrip(combinedTrips[0]);

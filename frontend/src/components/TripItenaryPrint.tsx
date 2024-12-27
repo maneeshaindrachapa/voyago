@@ -71,8 +71,8 @@ export const TripItineraryPrint = () => {
   const minutes = Math.round(totalDurationInMinutes % 60);
 
   return (
-    <div className="p-4 rounded-lg shadow-md">
-      <div ref={contentRef}>
+    <div className="rounded-lg shadow-md">
+      <div ref={contentRef} className="p-4">
         <div className="flex flex-col mb-4">
           <h2 className="text-lg font-semibold">{selectedTrip?.tripname}</h2>
           <p className="text-sm">Country:{selectedTrip?.country}</p>
@@ -104,10 +104,12 @@ export const TripItineraryPrint = () => {
           <div className="flex flex-row">
             <h3 className="text-md font-semibold">Total Distance:</h3>
             <p className="text-sm ml-1">
-              {route.legs.reduce(
-                (total, leg) => total + (leg.distance?.value || 0),
-                0
-              ) / 1000}{' '}
+              {(
+                route.legs.reduce(
+                  (total, leg) => total + (leg.distance?.value || 0),
+                  0
+                ) / 1000
+              ).toFixed(2)}{' '}
               km
             </p>
           </div>

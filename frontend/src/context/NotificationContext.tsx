@@ -56,7 +56,7 @@ export const NotificationProvider = ({
     };
 
     fetchUserNotifications();
-  }, [user]);
+  }, [user, notifications]);
 
   const markNotificationAsRead = async (
     notification: Notification,
