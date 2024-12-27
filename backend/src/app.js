@@ -3,6 +3,7 @@ import { clerkMiddleware } from '@clerk/express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import usersRoute from './routes/users-route.js';
+import locationRoute from './routes/location-route.js';
 
 dotenv.config(); // Load environment variables
 
@@ -23,6 +24,7 @@ app.use(clerkMiddleware());
 
 // Routes
 app.use('/api', usersRoute);
+app.use('/locations', locationRoute);
 
 // Default Route
 app.get('/', (req, res) => {

@@ -246,7 +246,6 @@ function GoogleMapComponent() {
     );
 
     setListOfPlaces((prevSetListOfPlaces) => [
-      ...prevSetListOfPlaces,
       {
         lat: location.lat,
         lng: location.lng,
@@ -254,6 +253,7 @@ function GoogleMapComponent() {
         userId: user?.id || '',
         color: pinColor,
       },
+      ...prevSetListOfPlaces,
     ]);
 
     setSaveBtn(true);
@@ -289,8 +289,8 @@ function GoogleMapComponent() {
     );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="col-span-2 relative">
+    <div className="flex flex-col gap-4">
+      <div className="relative">
         {selectedTrip && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex w-[60vh] items-center gap-2 bg-white dark:bg-black p-2 shadow-md rounded-lg">
             <Autocomplete
@@ -336,10 +336,10 @@ function GoogleMapComponent() {
           </GoogleMap>
         </div>
       </div>
-      <div className="col-span-1 relative">
-        <div className="col-span-1 bg-white dark:bg-muted/50 p-4 rounded-lg shadow-md overflow-auto h-[40vh]">
+      <div className="relative">
+        <div className="col-span-1 bg-white dark:bg-muted/50 p-4 rounded-lg shadow-md overflow-auto h-[28vh]">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold font-voyago">
+            <h2 className="text-lg font-semibold font-voyago tracking-tighter">
               Trip Itinerary
             </h2>
             {saveBtn && (

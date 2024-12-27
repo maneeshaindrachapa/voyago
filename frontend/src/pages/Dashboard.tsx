@@ -23,6 +23,7 @@ import { Toaster } from '../components/ui/sonner';
 import GoogleMapComponent from '../components/GoogleMap';
 import Notifications from '../components/Notifications';
 import { useState } from 'react';
+import TripSuggestions from '../components/TripSuggestions';
 
 export function DashboardPage() {
   const [openTripCreate, setOpenTripCreate] = useState(false);
@@ -102,11 +103,13 @@ export function DashboardPage() {
             <div className="rounded-xl bg-muted/50 md:col-span-2 min-h-[40vh]">
               <TripList />
             </div>
-            <div className="rounded-xl bg-muted/10 md:col-span-6 min-h-[40vh]">
+            <div className="rounded-xl bg-muted/10 md:col-span-4 min-h-[40vh]">
               <GoogleMapComponent />
             </div>
+            <div className="rounded-xl bg-muted/50 md:col-span-2 min-h-[40vh]">
+              <TripSuggestions />
+            </div>
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
           <Toaster />
         </div>
       </SidebarInset>
