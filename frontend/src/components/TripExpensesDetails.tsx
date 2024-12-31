@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useUser } from '@clerk/clerk-react';
 import { useReactToPrint } from 'react-to-print';
+import { Skeleton } from './ui/skeleton';
 
 const expenseTypes = {
   FOOD: { label: 'Food & Drinks', icon: <Utensils className="w-4 h-4 mr-2" /> },
@@ -32,12 +33,21 @@ const TripExpensesDetails: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
   const { selectedTrip } = useTripContext();
-  const { expenses, loading, error } = useExpenseContext();
+  const { expenses, loading } = useExpenseContext();
   const { users } = useUserContext();
   const { user } = useUser();
 
-  if (loading) return <p>Loading expenses...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading)
+    return (
+      <div className="flex flex-col space-y-3 p-2 w-full">
+        <Skeleton className="h-[10vh] w-full rounded-xl" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+        </div>
+        <Skeleton className="h-[10vh] w-full rounded-xl" />
+      </div>
+    );
 
   const tripId = selectedTrip?.id;
   const tripExpenses = tripId ? expenses[tripId] || [] : [];
@@ -177,25 +187,31 @@ const TripExpensesDetails: React.FC = () => {
           </ul>
         )}
 
-        <p className="text-sm mt-2 flex justify-end">You Spent: {totalSpent}</p>
-        <p className="text-sm  mt -2 flex justify-end">
-          Total Trip Cost: {totalTrip}
-        </p>
-        <p
-          className={`text-sm mt-3 font-voyago flex justify-end ${
-            parseFloat(totalOwed) > 0
-              ? 'text-red-500'
-              : parseFloat(totalOwed) < 0
-                ? 'text-green-500'
-                : 'text-gray-700'
-          }`}
-        >
-          {parseFloat(totalOwed) > 0
-            ? `You owe: ${totalOwed}`
-            : parseFloat(totalOwed) < 0
-              ? `People owe you: ${Math.abs(parseFloat(totalOwed))}`
-              : 'All settled'}
-        </p>
+        {tripExpenses.length > 0 && (
+          <>
+            <p className="text-sm mt-2 flex justify-end">
+              You Spent: {totalSpent}
+            </p>
+            <p className="text-sm  mt -2 flex justify-end">
+              Total Trip Cost: {totalTrip}
+            </p>
+            <p
+              className={`text-sm mt-3 font-voyago flex justify-end ${
+                parseFloat(totalOwed) > 0
+                  ? 'text-red-500'
+                  : parseFloat(totalOwed) < 0
+                    ? 'text-green-500'
+                    : 'text-gray-700'
+              }`}
+            >
+              {parseFloat(totalOwed) > 0
+                ? `You owe: ${totalOwed}`
+                : parseFloat(totalOwed) < 0
+                  ? `People owe you: ${Math.abs(parseFloat(totalOwed))}`
+                  : 'All settled'}
+            </p>
+          </>
+        )}
       </div>
       <button
         onClick={() => reactToPrintFn()}
