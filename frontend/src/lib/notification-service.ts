@@ -1,14 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
-/**
- * Adds notifications for multiple users to the notifications table in Supabase.
- *
- * @param supabase - Supabase client instance.
- * @param userIds - An array of user IDs receiving the notification.
- * @param tripId - The ID of the related trip (optional).
- * @param message - The notification message.
- * @returns {Promise<{ success: boolean; error?: string }>} - The result of the operation.
- */
 export const addNotificationsForTripShare = async (
   supabase: SupabaseClient,
   userIds: string[],
@@ -41,14 +32,6 @@ export const addNotificationsForTripShare = async (
   }
 };
 
-/**
- * Fetches notifications by trip ID and read status.
- *
- * @param {supabase} - Supabase client instance.
- * @param {string} tripId - The ID of the trip.
- * @param {boolean} isRead - Whether to fetch read or unread notifications.
- * @returns {Promise<Array>} List of notifications for the trip.
- */
 export const fetchNotificationsByTrip = async (
   supabase: SupabaseClient,
   tripId: string
@@ -72,13 +55,6 @@ export const fetchNotificationsByTrip = async (
   }
 };
 
-/**
- * Fetches notifications with trip details for a specific user.
- *
- * @param supabase - The Supabase client instance.
- * @param userId - The ID of the user to fetch notifications for.
- * @returns Notifications with trip details.
- */
 export const fetchUnreadNotificationsByUserId = async (
   supabase: SupabaseClient,
   userId: string
@@ -120,12 +96,6 @@ export const fetchUnreadNotificationsByUserId = async (
   }
 };
 
-/**
- * Marks a notification as read in the database.
- *
- * @param notificationId - The ID of the notification to mark as read.
- * @returns A success message or an error.
- */
 export const notificationMarkAsRead = async (
   supabase: SupabaseClient,
   notificationId: string,

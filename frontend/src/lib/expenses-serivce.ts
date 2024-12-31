@@ -19,6 +19,7 @@ interface ExpenseResponse {
   paid_by: string;
   split_between: string[];
   trip_name: string;
+  created_at: string;
 }
 
 export const addExpenseToSupabase = async (
@@ -39,13 +40,6 @@ export const addExpenseToSupabase = async (
   }
 };
 
-/**
- * Fetch expenses for a specific trip ID.
- *
- * @param supabase Supabase client instance
- * @param tripId Trip ID to fetch expenses for
- * @returns Promise resolving to an array of expenses or throwing an error
- */
 export const fetchExpensesForTrip = async (
   supabase: SupabaseClient,
   tripId: string
@@ -73,6 +67,7 @@ export const fetchExpensesForTrip = async (
         paid_by: item.paid_by,
         split_between: item.split_between,
         trip_name: item.trips.tripname,
+        created_at: item.created_at,
       })) || [];
 
     return { [tripId]: mappedExpenses };

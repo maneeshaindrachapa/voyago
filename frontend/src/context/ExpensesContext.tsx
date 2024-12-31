@@ -12,6 +12,7 @@ interface Expense {
   paid_by: string;
   split_between: string[];
   trip_name: string;
+  created_at: string;
 }
 
 interface ExpenseContextData {

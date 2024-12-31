@@ -1,4 +1,4 @@
-import { ListChecks, SquareTerminal } from 'lucide-react';
+import { Coins, ListChecks, SquareTerminal } from 'lucide-react';
 
 import {
   SidebarGroup,
@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import { useTripContext } from '../context/TripContext';
+import TripExpensesDetails from './TripExpensesDetails';
 
 export function NavMain() {
   const { selectedTrip } = useTripContext();
@@ -71,6 +72,29 @@ export function NavMain() {
                     </DialogTitle>
                     <DialogDescription>
                       <TripItineraryPrint />
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
+            </SidebarMenuSubButton>
+          )}
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          {selectedTrip && (
+            <SidebarMenuSubButton>
+              <Dialog>
+                <DialogTrigger className="flex flex-row justify-start text-xs">
+                  <Coins className="w-4 h-4 mr-2" />
+                  Expenses -{selectedTrip.tripname}
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="mb-2">
+                      Do you want to print trip expenses for -{' '}
+                      {selectedTrip.tripname}{' '}
+                    </DialogTitle>
+                    <DialogDescription>
+                      <TripExpensesDetails />
                     </DialogDescription>
                   </DialogHeader>
                 </DialogContent>
