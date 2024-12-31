@@ -2,8 +2,8 @@
 
 A full-stack **Trip Planner & Budget Handling** application built with modern technologies, enabling users to plan trips, manage budgets, and split expenses seamlessly. This project demonstrates integration with **Clerk** for authentication, **Supabase** for backend services, **Google Maps API** for geolocation features, and a **React** frontend with a **Node.js** backend.
 
-<video src="https://github.com/maneeshaindrachapa/voyago/blob/master/public/voyago-sample.mp4" controls="controls" style="width: 100%;">
-</video>
+https://github.com/user-attachments/assets/87f67cd4-29f5-4a54-82c1-7b4555c3985d
+
 
 ## Features
 
