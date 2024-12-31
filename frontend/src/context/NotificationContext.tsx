@@ -37,6 +37,7 @@ export const NotificationProvider = ({
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const supabase = createClerkSupabaseClient();
   const { user } = useUser();
+  const [refresh, setRefersh] = useState(0);
 
   useEffect(() => {
     const fetchUserNotifications = async () => {
@@ -56,7 +57,7 @@ export const NotificationProvider = ({
     };
 
     fetchUserNotifications();
-  }, [user, notifications]);
+  }, [user, refresh]);
 
   const markNotificationAsRead = async (
     notification: Notification,
@@ -64,6 +65,7 @@ export const NotificationProvider = ({
   ) => {
     try {
       await notificationMarkAsRead(supabase, notification.id, accept);
+      setRefersh(refresh + 1);
       if (user && notification.trips) {
         const updatedSharedUsers = notification.trips.sharedusers.some(
           (sharedUser) => sharedUser.userId === user?.id
