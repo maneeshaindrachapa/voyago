@@ -6,6 +6,7 @@ import React, {
   ReactNode,
 } from 'react';
 import axios from 'axios';
+import { useAuth } from '@clerk/clerk-react';
 
 interface User {
   id: string;
@@ -31,14 +32,29 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { getToken } = useAuth();
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     const fetchUsers = async () => {
+      const token = await getToken();
       setLoading(true);
       try {
-        const response = await axios.get(BACKEND_URL + '/api/users');
+        const source = axios.CancelToken.source();
+        const timeout = setTimeout(() => {
+          source.cancel('Request timeout');
+        }, 10000);
+
+        const response = await axios.get(BACKEND_URL + '/api/users', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cancelToken: source.token,
+        });
+
+        clearTimeout(timeout);
+
         const simplifiedUsers = response.data.map((user: any) => {
           return {
             id: user.id,
@@ -48,9 +64,14 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
             imageUrl: user.imageUrl || null,
           };
         });
+
         setUsers(simplifiedUsers);
       } catch (err: any) {
-        setError(err.message || 'Failed to fetch users');
+        if (axios.isCancel(err)) {
+          setError('Request timed out');
+        } else {
+          setError(err.message || 'Failed to fetch users');
+        }
         console.log(err.message);
       } finally {
         setLoading(false);

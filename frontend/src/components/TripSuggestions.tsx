@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useTripContext } from '../context/TripContext';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
+import { useAuth } from '@clerk/clerk-react';
 
 interface Place {
   name: string;
@@ -38,6 +39,7 @@ const TripSuggestions = () => {
 
   const getPhotoUrl = (photoReference: string) =>
     `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${photoReference}&key=${GOOGLE_MAPS_API_KEY}`;
+  const { getToken } = useAuth();
 
   useEffect(() => {
     if (selectedTrip != null && selectedTrip?.locations?.length > 0) {
@@ -57,6 +59,11 @@ const TripSuggestions = () => {
       try {
         const results = await Promise.all(
           locations.map(async (location) => {
+            const token = await getToken();
+            const source = axios.CancelToken.source();
+            const timeout = setTimeout(() => {
+              source.cancel('Request timeout');
+            }, 10000);
             const attractionsResponse = await axios.get(
               BACKEND_URL + '/locations/places',
               {
@@ -65,9 +72,14 @@ const TripSuggestions = () => {
                   radius: 1500,
                   type: 'tourist_attraction',
                 },
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                cancelToken: source.token,
               }
             );
 
+            clearTimeout(timeout);
             const restaurantsResponse = await axios.get(
               BACKEND_URL + '/locations/places',
               {

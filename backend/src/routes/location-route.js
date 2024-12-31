@@ -1,5 +1,6 @@
 import express from 'express';
 import axios from 'axios';
+
 const router = express.Router();
 
 router.get('/places', async (req, res) => {
