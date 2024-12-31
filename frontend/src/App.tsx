@@ -9,6 +9,7 @@ import { DashboardPage } from './pages/Dashboard';
 import { TripProvider } from './context/TripContext';
 import UserProvider from './context/UserContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ExpenseProvider } from './context/ExpensesContext';
 
 const App: React.FC = () => {
   const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_FRONTEND_API;
@@ -33,9 +34,11 @@ const App: React.FC = () => {
                 <ProtectedRoute>
                   <TripProvider>
                     <UserProvider>
-                      <NotificationProvider>
-                        <DashboardPage />
-                      </NotificationProvider>
+                      <ExpenseProvider>
+                        <NotificationProvider>
+                          <DashboardPage />
+                        </NotificationProvider>
+                      </ExpenseProvider>
                     </UserProvider>
                   </TripProvider>
                 </ProtectedRoute>

@@ -38,21 +38,18 @@ REACT_APP_BACKEND_URL=<Your Backend URL>
 Run the following SQL command in your Supabase SQL editor to create the trips table:
 
 ```
-
-create table
-public.trips (
-id serial not null,
-tripname text not null,
-country text not null,
-daterange jsonb not null,
-ownerid text not null,
-created_at timestamp without time zone null default now(),
-imageurl text null,
-locations jsonb null default '[]'::jsonb,
-sharedusers jsonb not null default '[]'::jsonb,
-constraint trips_pkey primary key (id)
-) tablespace pg_default;
-
+CREATE TABLE public.trips (
+    id SERIAL NOT NULL, -- Auto-incrementing primary key for each trip
+    tripname TEXT NOT NULL, -- Name of the trip
+    country TEXT NOT NULL, -- Country associated with the trip
+    daterange JSONB NOT NULL, -- JSONB field for storing the date range
+    ownerid TEXT NOT NULL, -- User ID of the trip owner
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(), -- Timestamp for when the trip was created
+    imageurl TEXT, -- Optional field for storing the image URL
+    locations JSONB DEFAULT '[]'::jsonb, -- JSONB array for storing locations
+    sharedusers JSONB NOT NULL DEFAULT '[]'::jsonb, -- JSONB array for storing shared users
+    CONSTRAINT trips_pkey PRIMARY KEY (id) -- Primary key constraint on the id column
+) TABLESPACE pg_default;
 ```
 
 ### Create the tasks Table
@@ -60,15 +57,12 @@ constraint trips_pkey primary key (id)
 Run the following SQL command in your Supabase SQL editor to create the trips table:
 
 ```
-
-create table
-public.tasks (
-id serial not null,
-name text not null,
-user_id text not null default requesting_user_id (),
-constraint tasks_pkey primary key (id)
-) tablespace pg_default;
-
+CREATE TABLE public.tasks (
+    id SERIAL NOT NULL, -- Auto-incrementing primary key for each task
+    name TEXT NOT NULL, -- Name of the task
+    user_id TEXT NOT NULL DEFAULT current_user, -- User ID associated with the task, defaults to the requesting user
+    CONSTRAINT tasks_pkey PRIMARY KEY (id) -- Primary key constraint on the id column
+) TABLESPACE pg_default;
 ```
 
 ### Create the notifications Table
@@ -76,21 +70,34 @@ constraint tasks_pkey primary key (id)
 Run the following SQL command in your Supabase SQL editor to create the notifications table:
 
 ```
-
-create table
-public.notifications (
-id uuid not null default gen_random_uuid (),
-user_id text not null,
-trip_id integer null,
-message text not null,
-is_read boolean null default false,
-created_at timestamp without time zone null default now(),
-accept boolean null default false,
-constraint notifications_pkey primary key (id),
-constraint notifications_trip_id_fkey foreign key (trip_id) references trips (id) on delete cascade
-) tablespace pg_default;
-
+CREATE TABLE public.notifications (
+    id UUID NOT NULL DEFAULT gen_random_uuid(), -- Unique identifier for each notification
+    user_id TEXT NOT NULL, -- The ID of the user receiving the notification
+    trip_id INTEGER NULL, -- The ID of the associated trip (nullable)
+    message TEXT NOT NULL, -- The notification message content
+    is_read BOOLEAN DEFAULT FALSE, -- Indicates if the notification has been read
+    created_at TIMESTAMP DEFAULT NOW(), -- Timestamp of notification creation
+    accept BOOLEAN DEFAULT FALSE, -- Indicates acceptance status for notifications requiring action
+    CONSTRAINT notifications_pkey PRIMARY KEY (id), -- Primary key constraint on id
+    CONSTRAINT notifications_trip_id_fkey FOREIGN KEY (trip_id) REFERENCES trips (id) ON DELETE CASCADE -- Foreign key constraint on trip_id
+);
 ```
+
+### Create expenses table
+
+Run the following SQL command in your Supabase SQL editor to create the expenses table:
+
+````
+CREATE TABLE expenses (
+    id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+    trip_id INT NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    amount NUMERIC NOT NULL CHECK (amount > 0), -- Ensure amount is positive
+    expense_type TEXT NOT NULL CHECK (expense_type IN ('FOOD', 'TRAVEL', 'ACCOMMODATION', 'SHOPPING', 'MISC')),
+    paid_by TEXT NOT NULL, -- Assuming this is a user ID, ensure proper referencing elsewhere if needed
+    split_between JSONB NOT NULL, -- Ensure JSONB is used for split data
+    created_at TIMESTAMP DEFAULT NOW()
+);```
 
 ## Project Setup
 
@@ -101,7 +108,7 @@ constraint notifications_trip_id_fkey foreign key (trip_id) references trips (id
 
 yarn install
 
-```
+````
 
 2. Start the Development Server:<br>
    Use the following command to start the development server:

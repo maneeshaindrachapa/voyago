@@ -19,9 +19,18 @@ import GoogleMapComponent from '../components/GoogleMap';
 import Notifications from '../components/Notifications';
 import { useState } from 'react';
 import TripSuggestions from '../components/TripSuggestions';
+import TripExpenseForm from '../components/TripExpenseForm';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTrigger,
+} from '../components/ui/drawer';
+import TripExpensesCard from '../components/TripExpensesCard';
 
 export function DashboardPage() {
   const [openTripCreate, setOpenTripCreate] = useState(false);
+  const [openExpenseAdd, setOpenExpenseAdd] = useState(false);
 
   return (
     <SidebarProvider>
@@ -33,13 +42,11 @@ export function DashboardPage() {
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
             </div>
-
             <Notifications />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-8">
-            {/* Create Trip */}
             <div className="aspect-auto rounded-xl bg-muted/50 md:col-span-2 h-[15vh]">
               <div className="flex flex-col h-full items-center justify-center p-4">
                 <Popover open={openTripCreate} onOpenChange={setOpenTripCreate}>
@@ -65,8 +72,8 @@ export function DashboardPage() {
             {/* Handle Budget */}
             <div className="aspect-auto rounded-xl bg-muted/50 md:col-span-2 h-[15vh]">
               <div className="flex flex-col h-full items-center justify-center p-4">
-                <Popover>
-                  <PopoverTrigger>
+                <Drawer open={openExpenseAdd} onOpenChange={setOpenExpenseAdd}>
+                  <DrawerTrigger>
                     <div className="flex flex-col items-center justify-center space-y-2 text-primary hover:text-primary/90 cursor-pointer transition-all">
                       <div className="flex items-center space-x-2">
                         <HandCoins className="h-6 w-6 transition-transform hover:scale-125" />
@@ -78,11 +85,19 @@ export function DashboardPage() {
                         Take control of your budget!
                       </p>
                     </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[300px]">
-                    <TripForm />
-                  </PopoverContent>
-                </Popover>
+                  </DrawerTrigger>
+                  <DrawerContent className="mx-auto max-w-sm justify-center">
+                    <DrawerDescription className="p-4">
+                      <TripExpenseForm closeForm={setOpenExpenseAdd} />
+                    </DrawerDescription>
+                  </DrawerContent>
+                </Drawer>
+              </div>
+            </div>
+            {/*  */}
+            <div className="aspect-auto rounded-xl bg-muted/50 md:col-span-2 h-[15vh]">
+              <div className="flex flex-col h-full items-center justify-center p-4">
+                <TripExpensesCard />
               </div>
             </div>
           </div>

@@ -163,8 +163,6 @@ export const fetchTripsSharedWithUser = async (
       .select('*')
       .filter('sharedusers', 'cs', JSON.stringify([{ userId: userId }]));
 
-    console.log('Raw data from Supabase:', data);
-
     if (error) {
       throw new Error(`Error fetching trips: ${error.message}`);
     }
