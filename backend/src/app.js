@@ -18,7 +18,7 @@ app.use(morgan('dev')); // Log incoming requests
 app.use(express.json()); // Parse incoming JSON requests
 app.use(
   cors({
-    origin: process.env.FRONT_END_URL,
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
