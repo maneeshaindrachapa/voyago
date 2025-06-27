@@ -97,7 +97,8 @@ CREATE TABLE expenses (
     paid_by TEXT NOT NULL, -- Assuming this is a user ID, ensure proper referencing elsewhere if needed
     split_between JSONB NOT NULL, -- Ensure JSONB is used for split data
     created_at TIMESTAMP DEFAULT NOW()
-);```
+);
+```
 
 ## Project Setup
 
