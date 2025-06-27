@@ -87,7 +87,7 @@ CREATE TABLE public.notifications (
 
 Run the following SQL command in your Supabase SQL editor to create the expenses table:
 
-````
+```
 CREATE TABLE expenses (
     id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
     trip_id INT NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
@@ -100,6 +100,10 @@ CREATE TABLE expenses (
 );
 ```
 
+### Clerk & Supabase system config
+
+[Clerk and supabase connection setup](https://supabase.com/partners/integrations/clerk)
+
 ## Project Setup
 
 1. Install Dependencies:<br>
@@ -109,7 +113,7 @@ CREATE TABLE expenses (
 
 yarn install
 
-````
+```
 
 2. Start the Development Server:<br>
    Use the following command to start the development server:
