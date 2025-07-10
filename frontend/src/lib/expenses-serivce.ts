@@ -8,6 +8,7 @@ export interface ExpenseRequest {
   expense_type: string;
   paid_by: string;
   split_between: string[];
+  percentages: Record<string, number>;
 }
 
 interface ExpenseResponse {
@@ -18,6 +19,7 @@ interface ExpenseResponse {
   expense_type: string;
   paid_by: string;
   split_between: string[];
+  percentages: Record<string, number>;
   trip_name: string;
   created_at: string;
 }
@@ -66,6 +68,7 @@ export const fetchExpensesForTrip = async (
         expense_type: item.expense_type,
         paid_by: item.paid_by,
         split_between: item.split_between,
+        percentages: item.percentages,
         trip_name: item.trips.tripname,
         created_at: item.created_at,
       })) || [];

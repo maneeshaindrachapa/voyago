@@ -11,6 +11,7 @@ interface Expense {
   expense_type: string;
   paid_by: string;
   split_between: string[];
+  percentages: Record<string, number>;
   trip_name: string;
   created_at: string;
 }

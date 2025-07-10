@@ -43,19 +43,36 @@ const expenseTypes = {
   MISC: { label: 'Miscellaneous', icon: <Coffee className="w-4 h-4 mr-2" /> },
 };
 
-const expenseSchema = z.object({
-  name: z.string().min(1, 'Expense name is required'),
-  amount: z.number().positive('Amount must be greater than zero'),
-  expenseType: z.enum([
-    'FOOD',
-    'TRAVEL',
-    'ACCOMMODATION',
-    'SHOPPING',
-    'MISC',
-  ] as const),
-  paidBy: z.string().min(1, 'Please select who paid'),
-  splitBetween: z.array(z.string()).nonempty('Select at least one participant'),
-});
+const expenseSchema = z
+  .object({
+    name: z.string().min(1, 'Expense name is required'),
+    amount: z.number().positive('Amount must be greater than zero'),
+    expenseType: z.enum([
+      'FOOD',
+      'TRAVEL',
+      'ACCOMMODATION',
+      'SHOPPING',
+      'MISC',
+    ] as const),
+    paidBy: z.string().min(1, 'Please select who paid'),
+    splitBetween: z
+      .array(z.string())
+      .nonempty('Select at least one participant'),
+    percentages: z.record(z.string(), z.coerce.number().min(0).max(100)),
+  })
+  .refine(
+    (data) => {
+      const total = Object.values(data.percentages).reduce(
+        (sum, val) => sum + val,
+        0
+      );
+      return total === 100;
+    },
+    {
+      message: 'Total percentage must equal 100%',
+      path: ['percentages'],
+    }
+  );
 
 type ExpenseFormValues = z.infer<typeof expenseSchema>;
 
@@ -75,10 +92,10 @@ const TripExpenseForm: React.FC<{
     resolver: zodResolver(expenseSchema),
     defaultValues: {
       name: '',
-      amount: 0,
       expenseType: 'FOOD',
       paidBy: '',
       splitBetween: [],
+      percentages: {},
     },
   });
 
@@ -108,7 +125,6 @@ const TripExpenseForm: React.FC<{
       console.error('No trip selected!');
       return;
     }
-
     const expenseData = {
       trip_id: selectedTrip.id,
       name: data.name,
@@ -116,6 +132,7 @@ const TripExpenseForm: React.FC<{
       expense_type: data.expenseType,
       paid_by: data.paidBy,
       split_between: data.splitBetween,
+      percentages: data.percentages,
     };
 
     await addExpenseToSupabase(supabase, expenseData);
@@ -284,10 +301,39 @@ const TripExpenseForm: React.FC<{
                         </Avatar>
                         <p className="text-sm">{participant.name}</p>
                       </div>
+                      <div className="ml-auto">
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          placeholder="0%"
+                          className="w-20 text-right border rounded px-2 py-1 text-sm"
+                          value={
+                            form
+                              .watch(`percentages.${participant.id}`)
+                              ?.toString() ?? ''
+                          }
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            const parsed = parseFloat(raw);
+                            form.setValue(
+                              `percentages.${participant.id}`,
+                              isNaN(parsed) ? 0 : parsed
+                            );
+                          }}
+                          disabled={!field.value.includes(participant.id)}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
               </FormControl>
+              <p className="text-sm text-muted-foreground">
+                {form.formState.errors.percentages && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {form.formState.errors.percentages.message?.toString()}
+                  </p>
+                )}
+              </p>
               <FormDescription>
                 Who or with whom you want to split the expense
               </FormDescription>

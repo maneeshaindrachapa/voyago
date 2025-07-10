@@ -94,8 +94,9 @@ CREATE TABLE expenses (
     name TEXT NOT NULL,
     amount NUMERIC NOT NULL CHECK (amount > 0), -- Ensure amount is positive
     expense_type TEXT NOT NULL CHECK (expense_type IN ('FOOD', 'TRAVEL', 'ACCOMMODATION', 'SHOPPING', 'MISC')),
-    paid_by TEXT NOT NULL, -- Assuming this is a user ID, ensure proper referencing elsewhere if needed
-    split_between JSONB NOT NULL, -- Ensure JSONB is used for split data
+    paid_by TEXT NOT NULL, -- Assuming this is a user ID
+    split_between JSONB NOT NULL, -- List of participant IDs
+    percentages JSONB NOT NULL, -- Participant percentage mapping
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```
