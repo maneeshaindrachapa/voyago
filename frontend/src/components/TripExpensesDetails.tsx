@@ -72,21 +72,30 @@ const TripExpensesDetails: React.FC = () => {
 
     const tripId: string | undefined = selectedTrip?.id;
     const tripExpenses = tripId ? expenses[tripId] || [] : [];
+    const userId = user?.id || '';
 
     tripExpenses.forEach((expense) => {
-      const splitAmount = expense.amount / expense.split_between.length;
       totalTrip += expense.amount;
 
-      if (expense.paid_by === user?.id) {
-        totalSpent += expense.amount;
-      }
+      const percentageMap = expense.percentages || {};
+      const userSharePercent = percentageMap[userId] || 0;
+      const userShareAmount = (expense.amount * userSharePercent) / 100;
 
-      if (expense.split_between.includes(user?.id || '')) {
-        if (expense.paid_by === user?.id) {
-          totalOwed -= splitAmount * (expense.split_between.length - 1);
-        } else {
-          totalOwed += splitAmount;
-        }
+      if (expense.paid_by === userId) {
+        totalSpent += expense.amount;
+
+        // You paid, others owe you their shares
+        const othersOwe = Object.entries(percentageMap)
+          .filter(([id]) => id !== userId)
+          .reduce(
+            (sum, [, percent]) => sum + (expense.amount * percent) / 100,
+            0
+          );
+
+        totalOwed -= othersOwe; // You're owed this much by others
+      } else {
+        // Someone else paid, you owe your share
+        totalOwed += userShareAmount;
       }
     });
 
